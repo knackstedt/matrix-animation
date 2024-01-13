@@ -1,17 +1,21 @@
 {
   "name": "matrix-animation",
+  "version": "1.0.0",
+  "license": "MIT",
+  "repository": {
+    "url": "https://github.com/knackstedt/matrix-animation"
+  },
   "scripts": {
     "build": "tsc",
     "tsc": "tsc"
   },
+  "main": "dist/main.js",
   "files": [
-    
+    "dist",
+    "LICENSE",
+    "README.md",
+    "sample"
   ],
-  "version": "1.0.0",
-  "repository": {
-    "url": "https://github.com/knackstedt/matrix-animation"
-  },
-  "license": "MIT",
   "author": {
     "email": "andrewk@vivaldi.net",
     "name": "Andrew G. Knackstedt"
@@ -23,10 +27,8 @@
     "matrix"
   ],
   "private": false,
-  "dependencies": {
-    "tslib": "^2.6.2"
-  },
   "devDependencies": {
+    "tslib": "^2.6.2",
     "typescript": "~5.3.3"
   }
 }
