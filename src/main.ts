@@ -58,12 +58,15 @@ export class MatrixAnimation {
      */
     constructor(
         selector: string | HTMLElement,
-        private options: MatrixAnimationOptions = {}
+        public options: MatrixAnimationOptions = {}
     ) {
         this.setDefaultOptions();
 
         if (typeof selector == "string") {
             let el = document.querySelector(selector);
+            if (!el) {
+                throw new Error("No element matching selector \"" + selector + "\"");
+            }
             if (el.nodeName == "CANVAS") {
                 this.container = el.parentElement;
             }
@@ -93,6 +96,7 @@ export class MatrixAnimation {
             canvas = document.createElement("canvas");
             this.container.append(canvas);
         }
+        this._canvas = canvas;
 
         // TODO: this might need to be changed?
         if (getComputedStyle(this.container).position == 'static') {
@@ -116,7 +120,7 @@ export class MatrixAnimation {
                 }
             })
         });
-        this.mutationObserver.observe(this.container);
+        this.mutationObserver.observe(this.container, { childList: true });
 
         // Spread operator correctly serializes unicode
         this.charLists.forEach(list => {
@@ -313,8 +317,11 @@ class MatrixRaindrop {
         this.randomizeChars();
 
         // this.xSpeed = config.xSpeed;
+        this.initMoveDirection();
+    }
 
-        switch (config.direction) {
+    initMoveDirection() {
+        switch (this.config.direction) {
             case "LR": {
                 this.shiftDirection = () => {
                     this.x += randomFloat(4, 12);
