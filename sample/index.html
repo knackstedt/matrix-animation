@@ -40,10 +40,7 @@
     {"@context":"http://www.schema.org","@type":"website","name":"Matrix Animation","alternateName":"DotGlitch Matrix Animation","url":"https://matrix.dotglitch.dev/"}
     </script>
 
-    <script>
-        // Make exports global.
-        window.exports = window;
-    </script>
+    <script>window.exports = window</script>
     <script src="https://www.unpkg.com/matrix-animation/dist/main.js"></script>
     <style>
         html, body { width: 100%; height: 100%; margin: 0; background-color: #121212; color: #efefef;}
@@ -62,10 +59,6 @@
     <script type="module">
         import { Pane } from 'https://cdn.jsdelivr.net/npm/tweakpane@4.0.3/dist/tweakpane.min.js';
     
-        const pane = new Pane({
-            container: document.querySelector(".tweakpane")
-        });
-
         const defaults = Object.seal({
             autoStart: true,
             bloomColor: "#ff5730",
@@ -90,40 +83,69 @@
         const animation = new MatrixAnimation(".container", structuredClone(defaults));
 
         const reset = () => {
-            Object.keys(options).forEach(key => options[key] = undefined);
-            Object.entries(defaults).forEach(([key, value]) => options[key] = value);
+            const options = animation.options;
+            Object.keys(options)
+                .filter(key => key != "rainDrop")
+                .forEach(key => options[key] = undefined);
+            Object.entries(defaults)
+                .filter(([key]) => key != "rainDrop")
+                .forEach(([key, value]) => options[key] = value);
 
-            options.rainDrop = structuredClone(defaults.rainDrop);
+            // options.rainDrop = {};
+            Object.keys(options.rainDrop).forEach(key => options.rainDrop[key] = undefined);
+            Object.entries(defaults.rainDrop).forEach(([key, value]) => options.rainDrop[key] = value);
         }
 
-        const base = pane.addFolder({
-            title: 'options',
-            expanded: true,
-        });
-        base.addBinding(animation.options, 'autoStart');
-        base.addBinding(animation.options, 'bloomColor', { input: 'color:rgba' });
-        base.addBinding(animation.options, 'bloomSize', { min: 0, max: 30 });
-        base.addBinding(animation.options, 'rainWidth', { min: 0, max: 100 });
-        base.addBinding(animation.options, 'minFrameTime', { min: 5, max: 1000 });
-        base.addBinding(animation.options, 'windSpeed', { min: 0, max: 20 });
-        base.addBinding(animation.options, 'windDirection', { options: [{text: "Top=>Down", value: 'TD'}, { text: "Bottom=>Up", value: 'BU' }, { text: "Left=>Right", value: "LR"}, { text: "Right=>Left", value: "RL" }] });
-        base.addBinding(animation.options, 'warmupIterations', { min: 0, max: 500, step: 1 });
-        base.addBinding(animation.options, 'fadeStrength', { min: 0, max: 1 });
+        const initPane = () => {
+
+            const pane = new Pane({
+                container: document.querySelector(".tweakpane")
+            });
+
+            const base = pane.addFolder({
+                title: 'options',
+                expanded: true,
+            });
+            base.addBinding(animation.options, 'autoStart');
+            base.addBinding(animation.options, 'bloomColor', { input: 'color:rgba' });
+            base.addBinding(animation.options, 'bloomSize', { min: 0, max: 30 });
+            base.addBinding(animation.options, 'rainWidth', { min: 0, max: 100 });
+            base.addBinding(animation.options, 'minFrameTime', { min: 5, max: 1000 });
+            base.addBinding(animation.options, 'windSpeed', { min: 0, max: 20 });
+            base.addBinding(animation.options, 'windDirection', { options: [{text: "Top=>Down", value: 'TD'}, { text: "Bottom=>Up", value: 'BU' }, { text: "Left=>Right", value: "LR"}, { text: "Right=>Left", value: "RL" }] });
+            base.addBinding(animation.options, 'warmupIterations', { min: 0, max: 500, step: 1 });
+            base.addBinding(animation.options, 'fadeStrength', { min: 0, max: 1 });
 
 
-        const raindrop = pane.addFolder({
-            title: 'Raindrop Options',
-            expanded: true
-        });
+            const raindrop = pane.addFolder({
+                title: 'Raindrop Options',
+                expanded: true
+            });
 
-        raindrop.addBinding(animation.options.rainDrop, 'direction', { options: [{ text: "Top=>Down", value: 'TD' }, { text: "Bottom=>Up", value: 'BU' }, { text: "Left=>Right", value: "LR" }, { text: "Right=>Left", value: "RL" }] }).on('change', (ev) => {
-            animation.options.rainDrop.direction = ev.value;
-            animation.raindrops.forEach(rd => rd.initMoveDirection());
-        });
-        raindrop.addBinding(animation.options.rainDrop, 'headColor', { input: 'color:rgba' });
-        raindrop.addBinding(animation.options.rainDrop, 'trailColor', { input: 'color:rgba' });
-        raindrop.addBinding(animation.options.rainDrop, 'fontSize', { min: 1, max: 100, step: 1 });
-        raindrop.addBinding(animation.options.rainDrop, 'fontFamily');
+            raindrop.addBinding(animation.options.rainDrop, 'direction', { options: [{ text: "Top=>Down", value: 'TD' }, { text: "Bottom=>Up", value: 'BU' }, { text: "Left=>Right", value: "LR" }, { text: "Right=>Left", value: "RL" }] }).on('change', (ev) => {
+                animation.options.rainDrop.direction = ev.value;
+                animation.raindrops.forEach(rd => rd.initMoveDirection());
+            });
+            raindrop.addBinding(animation.options.rainDrop, 'headColor', { input: 'color:rgba' });
+            raindrop.addBinding(animation.options.rainDrop, 'trailColor', { input: 'color:rgba' });
+            raindrop.addBinding(animation.options.rainDrop, 'fontSize', { min: 1, max: 100, step: 1 });
+            raindrop.addBinding(animation.options.rainDrop, 'fontFamily');
+
+            pane.addBlade({
+                view: 'separator',
+            });
+
+            const btn = pane.addButton({
+                title: 'Reset',
+                // label: 'counter',   // optional
+            }).on('click', () => {
+                reset();
+                // pane.refresh();
+                pane.dispose();
+                initPane();
+            });
+        }
+        initPane();
     </script>
 </body>
 </html>
