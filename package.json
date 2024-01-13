@@ -1,0 +1,32 @@
+{
+  "name": "matrix-animation",
+  "scripts": {
+    "build": "tsc",
+    "tsc": "tsc"
+  },
+  "files": [
+    
+  ],
+  "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/knackstedt/matrix-animation"
+  },
+  "license": "MIT",
+  "author": {
+    "email": "andrewk@vivaldi.net",
+    "name": "Andrew G. Knackstedt"
+  },
+  "description": "Matrix Animation component",
+  "keywords": [
+    "canvas",
+    "animation",
+    "matrix"
+  ],
+  "private": false,
+  "dependencies": {
+    "tslib": "^2.6.2"
+  },
+  "devDependencies": {
+    "typescript": "~5.3.3"
+  }
+}

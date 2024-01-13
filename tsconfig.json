@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "declaration": false,
+    "module": "commonjs",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "target": "es2020",
+    "rootDir": "./src",
+    "outDir": "./dist/",
+    "strict": false,
+    "sourceMap": true
+  }
+}
