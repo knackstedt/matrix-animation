@@ -2,9 +2,7 @@
   "name": "matrix-animation",
   "version": "1.0.0",
   "license": "MIT",
-  "repository": {
-    "url": "https://github.com/knackstedt/matrix-animation"
-  },
+  "repository": "git:https://github.com/knackstedt/matrix-animation.git",
   "scripts": {
     "build": "tsc",
     "tsc": "tsc"
