@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+    <title>Matrix Animation</title>
+    <meta name="description" content="Matrix animation written in TypeScript" />
+    <meta name="author" content="Andrew Knackstedt" />
+    <link rel="base" href="https://dotglitch.dev/" />
+    <link rel="canonical" href="https://dotglitch.dev/" />
+    <meta rel="sitemap" type="application/xml" content="https://dotglitch.dev/sitemap.xml" />
+    <meta name="robots" content="index/follow" />
+    <meta name="googlebot" content="index/follow" />
+    <meta name="theme-color" content="#FF4455" />
+    <meta name="msapplication-navbutton-color" content="#FF4455" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="#FF4455" />
+    <!-- Schema.org markup for Google+ -->
+    <meta itemprop="name" content="Matrix Animation" />
+    <meta itemprop="description" content="Matrix animation written in TypeScript" />
+    <meta itemprop="image" content="https://dotglitch.dev/assets/logo.svg" />
+    <!-- markup for facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Matrix Animation" />
+    <meta property="og:url" content="https://dotglitch.dev/" />
+    <meta property="og:site_name" content="Example" />
+    <meta property="og:image" content="https://dotglitch.dev/assets/logo.svg" />
+    <meta property="og:description" content="Matrix animation written in TypeScript" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="fb:app_id" content="0" />
+    <meta property="fb:admins" content="0" />
+    <!-- markup for twitter -->
+    <meta name="twitter:card" content="Matrix Animation" />
+    <meta name="twitter:title" content="TypeScript Matrix Animation" />
+    <meta name="twitter:description" content="Matrix animation written in TypeScript" />
+    <meta name="twitter:creator" content="Andrew Knackstedt" />
+    <meta name="twitter:image" content="https://dotglitch.dev/assets/logo.svg" />
+    <!-- JSON-LD - structured data markup Google Search -->
+    <script type="application/ld+json">
+    {"@context":"http://www.schema.org","@type":"website","name":"Matrix Animation","alternateName":"DotGlitch Matrix Animation","url":"https://matrix.dotglitch.dev/"}
+    </script>
+
+    <script>
+        // Make exports global.
+        window.exports = window;
+    </script>
+    <script src="https://www.unpkg.com/matrix-animation/dist/main.js"></script>
+    <style>
+        html, body { width: 100%; height: 100%; margin: 0; background-color: #121212; color: #efefef;}
+        * { box-sizing: border-box}
+        
+        .container { height: 100% }
+        .tweakpane { position: fixed; top: 10px; right: 10px}
+    </style>
+</head>
+<body>
+    <div style="height: 100%;">
+        <div class="container"></div>
+        <div class="tweakpane"></div>
+    </div>
+
+    <script type="module">
+        import { Pane } from 'https://cdn.jsdelivr.net/npm/tweakpane@4.0.3/dist/tweakpane.min.js';
+    
+        const pane = new Pane({
+            container: document.querySelector(".tweakpane")
+        });
+
+        const defaults = Object.seal({
+            autoStart: true,
+            bloomColor: "#ff5730",
+            bloomSize: 0,
+            rainWidth: 10,
+            minFrameTime: 50,
+            rainDrop: Object.seal({
+                direction: "TD",
+                charArray: [..."⠁⠂⠃⠄⠅⠆⠇⠈⠉⠊⠋⠌⠍⠎⠏⠐⠑⠒⠓⠔⠕⠖⠗⠘⠙⠚⠛⠜⠝⠞⠟⠠⠡⠢⠣⠤⠥⠦⠧⠨⠩⠪⠫⠬⠭⠮⠯⠰⠱⠲⠳⠴⠵⠶⠷⠸⠹⠺⠻⠼⠽⠾⠿⡀⡁⡂⡃⡄⡅⡆⡇⡈⡉⡊⡋⡌⡍⡎⡏⡐⡑⡒⡓⡔⡕⡖⡗⡘⡙⡚⡛⡜⡝⡞⡟⡠⡡⡢⡣⡤⡥⡦⡧⡨⡩⡪⡫⡬⡭⡮⡯⡰⡱⡲⡳⡴⡵⡶⡷⡸⡹⡺⡻⡼⡽⡾⡿⢀⢁⢂⢃⢄⢅⢆⢇⢈⢉⢊⢋⢌⢍⢎⢏⢐⢑⢒⢓⢔⢕⢖⢗⢘⢙⢚⢛⢜⢝⢞⢟⢠⢡⢢⢣⢤⢥⢦⢧⢨⢩⢪⢫⢬⢭⢮⢯⢰⢱⢲⢳⢴⢵⢶⢷⢸⢹⢺⢻⢼⢽⢾⢿⣀⣁⣂⣃⣄⣅⣆⣇⣈⣉⣊⣋⣌⣍⣎⣏⣐⣑⣒⣓⣔⣕⣖⣗⣘⣙⣚⣛⣜⣝⣞⣟⣠⣡⣢⣣⣤⣥⣦⣧⣨⣩⣪⣫⣬⣭⣮⣯⣰⣱⣲⣳⣴⣵⣶⣷⣸⣹⣺⣻⣼⣽⣾⣿"],
+                headColor: "rgba(255,255,255,0.8)",
+                trailColor: "rgba(140,62,225,1)",
+                trailColors: [],
+                fontSize: 16,
+                fontFamily: "Arial"
+            }),
+            windSpeed: 0,
+            windDirection: 'TD',
+            warmupIterations: 50,
+            fadeStrength: 0.05,
+        });
+
+        const animation = new MatrixAnimation(".container", structuredClone(defaults));
+
+        const reset = () => {
+            Object.keys(options).forEach(key => options[key] = undefined);
+            Object.entries(defaults).forEach(([key, value]) => options[key] = value);
+
+            options.rainDrop = structuredClone(defaults.rainDrop);
+        }
+
+        const base = pane.addFolder({
+            title: 'options',
+            expanded: true,
+        });
+        base.addBinding(animation.options, 'autoStart');
+        base.addBinding(animation.options, 'bloomColor', { input: 'color:rgba' });
+        base.addBinding(animation.options, 'bloomSize', { min: 0, max: 30 });
+        base.addBinding(animation.options, 'rainWidth', { min: 0, max: 100 });
+        base.addBinding(animation.options, 'minFrameTime', { min: 5, max: 1000 });
+        base.addBinding(animation.options, 'windSpeed', { min: 0, max: 20 });
+        base.addBinding(animation.options, 'windDirection', { options: [{text: "Top=>Down", value: 'TD'}, { text: "Bottom=>Up", value: 'BU' }, { text: "Left=>Right", value: "LR"}, { text: "Right=>Left", value: "RL" }] });
+        base.addBinding(animation.options, 'warmupIterations', { min: 0, max: 500, step: 1 });
+        base.addBinding(animation.options, 'fadeStrength', { min: 0, max: 1 });
+
+
+        const raindrop = pane.addFolder({
+            title: 'Raindrop Options',
+            expanded: true
+        });
+
+        raindrop.addBinding(animation.options.rainDrop, 'direction', { options: [{ text: "Top=>Down", value: 'TD' }, { text: "Bottom=>Up", value: 'BU' }, { text: "Left=>Right", value: "LR" }, { text: "Right=>Left", value: "RL" }] }).on('change', (ev) => {
+            animation.options.rainDrop.direction = ev.value;
+            animation.raindrops.forEach(rd => rd.initMoveDirection());
+        });
+        raindrop.addBinding(animation.options.rainDrop, 'headColor', { input: 'color:rgba' });
+        raindrop.addBinding(animation.options.rainDrop, 'trailColor', { input: 'color:rgba' });
+        raindrop.addBinding(animation.options.rainDrop, 'fontSize', { min: 1, max: 100, step: 1 });
+        raindrop.addBinding(animation.options.rainDrop, 'fontFamily');
+    </script>
+</body>
+</html>
+
