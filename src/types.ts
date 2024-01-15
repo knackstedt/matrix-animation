@@ -6,11 +6,36 @@ export type MatrixOptions = Partial<{
      */
     autoStart: boolean;
     /**
+     * Control if rain particles are added into columns.
+     * 
+     * @default true
+     */
+    columnRain: boolean;
+    /**
+     * Control if rain particles are automatically added based 
+     * on `rainWidth` and `rainDensity`.
+     * 
+     * @default false
+     */
+    disableAutoRain: boolean;
+    /**
      * Control how quickly the particle fades. 
      * Should be a number between 1 and 0. 
      * @default 0.05
      */
     fadeStrength: number;
+    /**
+     * Control how many raindrops are added to the scene.
+     * Must have `disableAutoRain` set to true to activate.
+     */
+    rainCount: number;
+    /**
+     * Control how dense the rain droplets are added.
+     * Should be a number between 0 and 2.
+     * (Higher values are possible but not recommended)
+     * @default 2
+     */
+    rainDensity: number;
     /**
      * Control how wide the rain droplets are.
      * @default 12

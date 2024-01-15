@@ -57,55 +57,12 @@ export class MatrixAnimation {
      * @param options Configuration options
      */
     constructor(
-        selector: string | HTMLElement,
+        private selector: string | HTMLElement,
         public options: MatrixAnimationOptions = {}
     ) {
         this.setDefaultOptions();
 
-        if (typeof selector == "string") {
-            let el = document.querySelector(selector);
-            if (!el) {
-                throw new Error("No element matching selector \"" + selector + "\"");
-            }
-            if (el.nodeName == "CANVAS") {
-                this.container = el.parentElement;
-            }
-            else {
-                this.container = el as HTMLElement;
-            }
-        }
-        else if (selector instanceof HTMLElement) {
-            if (selector.nodeName == "CANVAS") {
-                this.container = selector.parentElement;
-            }
-            else {
-                this.container = selector as HTMLElement;
-            }   
-        }
-        else {
-            const error = new Error("Invalid selector passed to MatrixAnimation");
-            error['selector'] = selector;
-            error['options'] = options;
-            throw error;
-        }
-
-        let canvas = this.container.querySelector("canvas");
-        
-        if (!canvas) {
-            this.hasCreatedCanvas = true;
-            canvas = document.createElement("canvas");
-            this.container.append(canvas);
-        }
-        this._canvas = canvas;
-
-        // TODO: this might need to be changed?
-        if (getComputedStyle(this.container).position == 'static') {
-            this.container.style.position = "relative";
-        }
-        canvas.style.width = "100%";
-        canvas.style.height = "100%";
-        canvas.style.position = "absolute";
-
+        this.setupElements();
 
         this.resizeObserver = new ResizeObserver(() => this.onResize());
         this.resizeObserver.observe(this.container);
@@ -207,7 +164,55 @@ export class MatrixAnimation {
 
         this.options.rainWidth = this.options.rainWidth ?? 12;
         this.options.minFrameTime = this.options.minFrameTime ?? 50;
+        this.options.rainDensity = this.options.rainDensity ?? 2;
     }
+
+    private setupElements() {
+        if (typeof this.selector == "string") {
+            let el = document.querySelector(this.selector);
+            if (!el) {
+                throw new Error("No element matching selector \"" + this.selector + "\"");
+            }
+            if (el.nodeName == "CANVAS") {
+                this.container = el.parentElement;
+            }
+            else {
+                this.container = el as HTMLElement;
+            }
+        }
+        else if (this.selector instanceof HTMLElement) {
+            if (this.selector.nodeName == "CANVAS") {
+                this.container = this.selector.parentElement;
+            }
+            else {
+                this.container = this.selector as HTMLElement;
+            }
+        }
+        else {
+            const error = new Error("Invalid selector passed to MatrixAnimation");
+            error['selector'] = this.selector;
+            error['options'] = this.options;
+            throw error;
+        }
+
+        let canvas = this.container.querySelector("canvas");
+
+        if (!canvas) {
+            this.hasCreatedCanvas = true;
+            canvas = document.createElement("canvas");
+            this.container.append(canvas);
+        }
+        this._canvas = canvas;
+
+        // TODO: this might need to be changed?
+        if (getComputedStyle(this.container).position == 'static') {
+            this.container.style.position = "relative";
+        }
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+        canvas.style.position = "absolute";
+    }
+
 
     private initCanvasShift() {
         switch (this.options.windDirection) {
@@ -268,22 +273,17 @@ export class MatrixAnimation {
             this.raindrops.splice(0);
         }
 
-        let startIndex = add ? this.raindrops.length : 0;
+        let i = this.options.disableAutoRain
+            ?   this.options.rainCount ?? 0
+            :~~(this.options.rainDensity * this.maxColumns);
 
-        // Randomly place raindrops on the canvas
-        // 50% distributon top to bottom to smoothen
-        // bias on the random number generator
-        for (var i = startIndex; i < this.maxColumns; i++) {
+        while (i--) {
             this.raindrops.push(
                 new MatrixRaindrop(
-                    i * this.options.rainWidth,
-                    randomFloat(0, this.canvasHeight / 2),
-                    this,
-                    this.options.rainDrop
-                ),
-                new MatrixRaindrop(
-                    i * this.options.rainWidth,
-                    randomFloat(this.canvasHeight / 2, this.canvasHeight),
+                    this.options.columnRain 
+                        ? (i % this.maxColumns) * this.options.rainWidth
+                        : randomFloat(0, this.canvasWidth),
+                    randomFloat(0, this.canvasHeight),
                     this,
                     this.options.rainDrop
                 )
