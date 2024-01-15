@@ -165,6 +165,7 @@ export class MatrixAnimation {
         this.options.rainWidth = this.options.rainWidth ?? 12;
         this.options.minFrameTime = this.options.minFrameTime ?? 50;
         this.options.rainDensity = this.options.rainDensity ?? 2;
+        this.options.columnRain = this.options.columnRain ?? true;
     }
 
     private setupElements() {
@@ -321,7 +322,8 @@ export class MatrixAnimation {
         this.ctx.shadowColor = "";
         this.ctx.shadowBlur = 0;
 
-        this.performCanvasShift();
+        if (this.options.windSpeed > 0)
+            this.performCanvasShift();
 
         // Fade everything slightly
         this.ctx.fillStyle = `rgba(0,0,0,${this.options.fadeStrength ?? 0.05})`;
