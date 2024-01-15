@@ -48,6 +48,9 @@
         .tweakpane { position: fixed; top: 10px; right: 10px; transition: transform 200ms ease;}
         .show-button { position: fixed; top: 0; right: -100vw; transition: opacity 200ms ease; width: 160px; height: 64px; background-color: #555; padding: 6px 12px; border: 0; border-bottom-left-radius: 6px; font-family:Arial, Helvetica, sans-serif; font-size: 24px; }
         .show-button:hover { opacity: 1 !important }
+        canvas {
+            /* background-color: red; */
+        }
     </style>
 </head>
 <body>
@@ -63,19 +66,25 @@
     
         const defaults = Object.seal({
             autoStart: true,
-            bloomColor: "#ff5730",
-            bloomSize: 0,
+
             rainWidth: 10,
+            rainHeight: 8,
             minFrameTime: 50,
             rainDrop: Object.seal({
                 direction: "TD",
-                charArray: [..."⠁⠂⠃⠄⠅⠆⠇⠈⠉⠊⠋⠌⠍⠎⠏⠐⠑⠒⠓⠔⠕⠖⠗⠘⠙⠚⠛⠜⠝⠞⠟⠠⠡⠢⠣⠤⠥⠦⠧⠨⠩⠪⠫⠬⠭⠮⠯⠰⠱⠲⠳⠴⠵⠶⠷⠸⠹⠺⠻⠼⠽⠾⠿⡀⡁⡂⡃⡄⡅⡆⡇⡈⡉⡊⡋⡌⡍⡎⡏⡐⡑⡒⡓⡔⡕⡖⡗⡘⡙⡚⡛⡜⡝⡞⡟⡠⡡⡢⡣⡤⡥⡦⡧⡨⡩⡪⡫⡬⡭⡮⡯⡰⡱⡲⡳⡴⡵⡶⡷⡸⡹⡺⡻⡼⡽⡾⡿⢀⢁⢂⢃⢄⢅⢆⢇⢈⢉⢊⢋⢌⢍⢎⢏⢐⢑⢒⢓⢔⢕⢖⢗⢘⢙⢚⢛⢜⢝⢞⢟⢠⢡⢢⢣⢤⢥⢦⢧⢨⢩⢪⢫⢬⢭⢮⢯⢰⢱⢲⢳⢴⢵⢶⢷⢸⢹⢺⢻⢼⢽⢾⢿⣀⣁⣂⣃⣄⣅⣆⣇⣈⣉⣊⣋⣌⣍⣎⣏⣐⣑⣒⣓⣔⣕⣖⣗⣘⣙⣚⣛⣜⣝⣞⣟⣠⣡⣢⣣⣤⣥⣦⣧⣨⣩⣪⣫⣬⣭⣮⣯⣰⣱⣲⣳⣴⣵⣶⣷⣸⣹⣺⣻⣼⣽⣾⣿"],
+                // charArray: [..."⠁⠂⠃⠄⠅⠆⠇⠈⠉⠊⠋⠌⠍⠎⠏⠐⠑⠒⠓⠔⠕⠖⠗⠘⠙⠚⠛⠜⠝⠞⠟⠠⠡⠢⠣⠤⠥⠦⠧⠨⠩⠪⠫⠬⠭⠮⠯⠰⠱⠲⠳⠴⠵⠶⠷⠸⠹⠺⠻⠼⠽⠾⠿⡀⡁⡂⡃⡄⡅⡆⡇⡈⡉⡊⡋⡌⡍⡎⡏⡐⡑⡒⡓⡔⡕⡖⡗⡘⡙⡚⡛⡜⡝⡞⡟⡠⡡⡢⡣⡤⡥⡦⡧⡨⡩⡪⡫⡬⡭⡮⡯⡰⡱⡲⡳⡴⡵⡶⡷⡸⡹⡺⡻⡼⡽⡾⡿⢀⢁⢂⢃⢄⢅⢆⢇⢈⢉⢊⢋⢌⢍⢎⢏⢐⢑⢒⢓⢔⢕⢖⢗⢘⢙⢚⢛⢜⢝⢞⢟⢠⢡⢢⢣⢤⢥⢦⢧⢨⢩⢪⢫⢬⢭⢮⢯⢰⢱⢲⢳⢴⢵⢶⢷⢸⢹⢺⢻⢼⢽⢾⢿⣀⣁⣂⣃⣄⣅⣆⣇⣈⣉⣊⣋⣌⣍⣎⣏⣐⣑⣒⣓⣔⣕⣖⣗⣘⣙⣚⣛⣜⣝⣞⣟⣠⣡⣢⣣⣤⣥⣦⣧⣨⣩⣪⣫⣬⣭⣮⣯⣰⣱⣲⣳⣴⣵⣶⣷⣸⣹⣺⣻⣼⣽⣾⣿"],
+                // charArray: [..."0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"],
                 headColor: "rgba(255,255,255,0.8)",
                 trailColor: "rgba(140,62,225,1)",
-                trailColors: [],
+                // trailColors: ["#00f", "#0f0", "#00f", "#0f0", "#00f", "#0f0", "#00f", "#0f0", "#00f"],
+                // trailColorLogic: "sequential",
                 fontSize: 16,
-                fontFamily: "Arial"
+                fontFamily: "Arial",
             }),
+            trailBloomSize: 0,
+            trailBloomColor: "#9e9e9e",
+            headBloomSize: 0,
+            headBloomColor: "#ff9800",
             windSpeed: 0,
             windDirection: 'TD',
             warmupIterations: 50,
@@ -115,9 +124,12 @@
                 expanded: true,
             });
             base.addBinding(animation.options, 'autoStart');
-            base.addBinding(animation.options, 'bloomColor', { input: 'color:rgba' });
-            base.addBinding(animation.options, 'bloomSize', { min: 0, max: 30 });
+            base.addBinding(animation.options, 'headBloomSize', { min: 0, max: 30 });
+            base.addBinding(animation.options, 'headBloomColor', { input: 'color:rgba' });
+            base.addBinding(animation.options, 'trailBloomSize', { min: 0, max: 30 });
+            base.addBinding(animation.options, 'trailBloomColor', { input: 'color:rgba' });
             base.addBinding(animation.options, 'rainWidth', { min: 0, max: 100 });
+            // base.addBinding(animation.options, 'rainHeight', { min: 0, max: 100 });
             base.addBinding(animation.options, 'minFrameTime', { min: 5, max: 1000 });
             base.addBinding(animation.options, 'windSpeed', { min: 0, max: 20 });
             base.addBinding(animation.options, 'windDirection', { options: [{text: "Top=>Down", value: 'TD'}, { text: "Bottom=>Up", value: 'BU' }, { text: "Left=>Right", value: "LR"}, { text: "Right=>Left", value: "RL" }] });
