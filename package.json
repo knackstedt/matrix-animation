@@ -1,6 +1,6 @@
 {
   "name": "matrix-animation",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "license": "MIT",
   "repository": "https://github.com/knackstedt/matrix-animation",
   "type": "module",
