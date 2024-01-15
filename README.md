@@ -3,11 +3,11 @@
 > Demo [here](https://matrix.dotglitch.dev/)
 
 ## Getting Started
-> See the [example](./sample/index.html).
+> See the [example](https://github.com/knackstedt/matrix-animation/blob/main/index.html).
 
 1. Install: `npm i matrix-animation`
 2. Import:
-##### UMD: 
+##### : 
 ```html
 <script>window.exports = window</script>
 <script src="https://www.unpkg.com/matrix-animation/dist/main.js"></script>
@@ -32,4 +32,4 @@ matrix.options.rain.rainDrop.headColor = "#00f";
 ## Configuration
 
 Most configuration options are handled immediately via the options object.
-See [Types](./src/types) for available properties.
+See [Types](https://github.com/knackstedt/matrix-animation/blob/main/src/types) for available properties.
