@@ -167,11 +167,38 @@ export class MatrixAnimation {
      * Handle resize events.
      * The component uses a ResizeObserver, so this should rarely need to be called.
      */
-    onResize() {
+    onResize(refreshRain = true) {
+        // Negative if shrunk, 0 if unchanged, positive if grown
+        const widthChange = this.container.clientWidth - this.canvasWidth;
+        const heightChange = this.container.clientHeight - this.canvasHeight;
+
         this.canvas.width = this.canvasWidth = this.container.clientWidth;
         this.canvas.height = this.canvasHeight = this.container.clientHeight;
 
         this.maxColumns = this.canvasWidth / (this.options.rainWidth);
+
+        if (refreshRain) {
+            if (widthChange > 0) {
+                this.createRaindrops(true);
+            }
+            if (widthChange < 0) {
+                // Remove all the cut-off rain
+                this.raindrops = this.raindrops.filter(r => r.x < this.canvasWidth);
+            }
+            if (heightChange > 0) {
+                // TBD.
+            }
+            if (heightChange < 0) {
+                // Remove all the cut-off rain
+                this.raindrops = this.raindrops.filter(r => r.x < this.canvasWidth);
+            }
+
+            // this.createRaindrops();
+    
+            // // Preemptively draw the characters
+            // for (let i = 0; i < this.options.warmupIterations; i++)
+            //     this.drawRain();
+        }
     }
 
     private setDefaultOptions() {
@@ -224,12 +251,30 @@ export class MatrixAnimation {
     }
 
     private initCanvas() {
-        this.onResize();
+        this.onResize(false);
+
+        this.createRaindrops();
+
+        this.ctx.shadowColor = this.options.bloomColor ?? "#0000";
+        this.ctx.imageSmoothingEnabled = false;
+
+        // Preemptively draw the characters
+        for (let i = 0; i < this.options.warmupIterations; i++)
+            this.drawRain();
+    }
+
+    private createRaindrops(add = false) {
+        // If we aren't adding more rain, we're resetting things.
+        if (!add) {
+            this.raindrops.splice(0);
+        }
+
+        let startIndex = add ? this.raindrops.length : 0;
 
         // Randomly place raindrops on the canvas
         // 50% distributon top to bottom to smoothen
         // bias on the random number generator
-        for (var i = 0; i < this.maxColumns; i++) {
+        for (var i = startIndex; i < this.maxColumns; i++) {
             this.raindrops.push(
                 new MatrixRaindrop(
                     i * this.options.rainWidth,
@@ -245,13 +290,6 @@ export class MatrixAnimation {
                 )
             );
         }
-
-        this.ctx.shadowColor = this.options.bloomColor ?? "#0000";
-        this.ctx.imageSmoothingEnabled = false;
-
-        // Preemptively draw the characters
-        for (let i = 0; i < this.options.warmupIterations; i++)
-            this.drawRain();
     }
 
     // Context bound to this class
