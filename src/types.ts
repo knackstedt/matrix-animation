@@ -6,22 +6,22 @@ export type MatrixOptions = Partial<{
      */
     autoStart: boolean;
     /**
-     * Color of the bloom effect.
-     * Does nothing if `bloomSize` is set to 0.
-     * - Can be hex/rgb(a)/hls format.
-     * @default "#0000"
+     * Control how quickly the particle fades. 
+     * Should be a number between 1 and 0. 
+     * @default 0.05
      */
-    bloomColor: string;
-    /**
-     * Size of the bloom effect.
-     * @default 0
-     */
-    bloomSize: number;
+    fadeStrength: number;
     /**
      * Control how wide the rain droplets are.
      * @default 12
      */    
     rainWidth: number;
+    /**
+     * Control how wide the rain droplets are.
+     * @default 0
+     * @experimental
+     */
+    rainHeight: number;
     /**
      * Control the minimum amount of time between drawn frames.
      * @default 50
@@ -31,6 +31,42 @@ export type MatrixOptions = Partial<{
      * Configuration for the Raindrops.
      */    
     rainDrop: MatrixAnimationRaindropOptions;
+    /**
+     * Control the color of the bloom effect for the head.
+     * - Does nothing if headBloomSize is less than 0.
+     * - Can be hex/rgb(a)/hls format.
+     * 
+     * @default "rgba(255,255,255,0.8)"
+     */
+    headBloomColor: string;
+    /**
+     * Control the amount of bloom for the heads of the drop.
+     * 
+     * @default "0
+     */
+    headBloomSize: number;
+    /**
+     * Control the manner in which trail colors are applied
+     * - `random` picks from the `trailColors` array randomly.
+     * - `sequential` picks from the `trailColors` array in order.
+     * 
+     * @default "random"
+     */
+    trailColorLogic: "random" | "sequential";
+    /**
+     * Control the color of the bloom effect for the trail.
+     * - Does nothing if trailBloomSize is less than 0.
+     * - Can be hex/rgb(a)/hls format.
+     * 
+     * @default "rgba(255,255,255,0.8)"
+     */
+    trailBloomColor: string;
+    /**
+     * Control the amount of bloom for the trail of the drop.
+     * 
+     * @default "0
+     */
+    trailBloomSize: number;
     /**
      * Control how fast the canvas background translates
      * This creates a smoke movement effect.
@@ -59,12 +95,6 @@ export type MatrixOptions = Partial<{
      * @broken
      */
     warmupIterations: number;
-    /**
-     * Control how quickly the particle fades. 
-     * Should be a number between 1 and 0. 
-     * @default 0.05
-     */    
-    fadeStrength: number;
 }>;
 
 export type MatrixAnimationRaindropOptions = Partial<{

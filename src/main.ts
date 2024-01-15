@@ -255,7 +255,6 @@ export class MatrixAnimation {
 
         this.createRaindrops();
 
-        this.ctx.shadowColor = this.options.bloomColor ?? "#0000";
         this.ctx.imageSmoothingEnabled = false;
 
         // Preemptively draw the characters
@@ -310,41 +309,51 @@ export class MatrixAnimation {
     private drawRain() {
         let i = this.raindrops.length;
 
-        this.ctx.shadowColor = this.options.bloomColor;
-        this.ctx.shadowBlur = this.options.bloomSize;
+        // this.ctx.shadowColor = this.options.bloomColor;
+        // this.ctx.shadowBlur = this.options.bloomSize;
 
         // Call clear before we apply the fade fill
+        this.ctx.shadowColor = this.options.trailBloomColor;
+        this.ctx.shadowBlur = this.options.trailBloomSize;
         while (i--) {
             this.raindrops[i].clear(this.ctx);
         }
-
+        this.ctx.shadowColor = "";
         this.ctx.shadowBlur = 0;
+
         this.performCanvasShift();
 
         // Fade everything slightly
         this.ctx.fillStyle = `rgba(0,0,0,${this.options.fadeStrength ?? 0.05})`;
         this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
-        // Draw the new characters
         i = this.raindrops.length;
 
-        this.ctx.shadowColor = this.options.bloomColor;
-        this.ctx.shadowBlur = this.options.bloomSize;
+        this.ctx.shadowColor = this.options.trailBloomColor;
+        this.ctx.shadowBlur = this.options.trailBloomSize;
 
         while (i--) {
             this.raindrops[i].draw(this.ctx);
         }
+
+        this.ctx.shadowColor = "";
+        this.ctx.shadowBlur = 0;
     }
 }
 
 class MatrixRaindrop {
     private charList: string[];
-    previousChar: string;
-    previousX: number;
-    previousY: number;
+
+    private trailChars: {
+        x: number,
+        y: number,
+        char: string
+    }[] = [];
 
     private shiftDirection: Function;
     private xSpeed = 0;
+    private trailLength: number;
+    private font: string;
 
     constructor(
         public x: number,
@@ -356,6 +365,9 @@ class MatrixRaindrop {
 
         // this.xSpeed = config.xSpeed;
         this.initMoveDirection();
+
+        this.trailLength = this.matrixAnimation.options.trailColorLogic == "sequential" ? this.config.trailColors.length : 1//Math.ceil(1 / this.opacity);
+        this.font = (this.config.fontSize ?? 14) + "px " + (this.config.fontFamily ?? "Arial");
     }
 
     initMoveDirection() {
@@ -396,7 +408,7 @@ class MatrixRaindrop {
             case "TD":
             default: {
                 this.shiftDirection = () => {
-                    this.y += randomFloat(4, 12);
+                    this.y += randomFloat(4,12);//(this.matrixAnimation.options.rainHeight??0) + randomFloat(-2, 4);
                     if (this.y > this.matrixAnimation.canvasHeight) {
                         this.randomizeChars();
 
@@ -414,26 +426,37 @@ class MatrixRaindrop {
     }
 
     clear(ctx: CanvasRenderingContext2D) {
-        ctx.fillStyle = (this.config.trailColors && this.config.trailColors[randomInt(0, this.config.trailColors.length)])
-            ?? this.config.trailColor
-            ?? "rgba(140,62,225,1)";
+        let i = this.trailChars.length;
+        while (i--) {
+            const char = this.trailChars[i];
 
-        ctx.font = (this.config.fontSize ?? 14) + "px " + (this.config.fontFamily ?? "Arial");
-        ctx.fillText(this.previousChar, this.previousX, this.previousY);
+            const fill = 
+                this.config.trailColors
+                ? this.matrixAnimation.options.trailColorLogic == "sequential"
+                    ? (this.config.trailColors[i] ?? this.config.trailColors[this.config.trailColors.length -1])
+                    : this.config.trailColors[randomInt(0, this.config.trailColors.length)]
+                : this.config.trailColor || "#fff";
+            ctx.fillStyle = fill;
+            ctx.font = this.font;
+            ctx.fillText(char.char, char.x, char.y);
+        }
     }
 
     draw(ctx: CanvasRenderingContext2D) {
-        const char = this.previousChar =
-            this.config.charArray
+        const char = this.config.charArray
                 ? this.config.charArray[randomInt(0, this.config.charArray.length - 1)]
                 : this.charList[randomInt(0, this.charList.length - 1)];
 
-        ctx.fillStyle = this.config.headColor ?? "rgba(255,255,255,0.8)";
-        ctx.font = (this.config.fontSize ?? 14) + "px " + (this.config.fontFamily ?? "Arial");
-        ctx.fillText(char, this.x, this.y);
+        this.trailChars.unshift({ char, x: this.x, y: this.y});
+        this.trailChars.splice(this.trailLength);
 
-        this.previousX = this.x;
-        this.previousY = this.y;
+        ctx.shadowColor = this.matrixAnimation.options.headBloomColor;
+        ctx.shadowBlur = this.matrixAnimation.options.headBloomSize;
+        ctx.fillStyle = this.config.headColor ?? "rgba(255,255,255,0.8)";
+        ctx.font = this.font;
+        ctx.fillText(char, this.x, this.y);
+        ctx.shadowColor = "";
+        ctx.shadowBlur = 0;
 
         if (this.xSpeed) {
             this.xSpeed = Math.max(this.xSpeed - .05, 0);
