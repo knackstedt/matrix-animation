@@ -3,14 +3,14 @@ import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import dts from "vite-plugin-dts";
 
-export default defineConfig({
-    plugins: [dts({ rollupTypes: true })],
+export default defineConfig(({mode}) => ({
+    plugins: mode == "pages" ? null : [dts({ rollupTypes: true })],
     server: {
         port: 4300,
         strictPort: true
     },
     build: {
-        lib: {
+        lib: mode == "pages" ? null : {
             // Could also be a dictionary or array of multiple entry points
             entry: resolve(__dirname, 'src/main.ts'),
             name: 'MatrixAnimation',
@@ -21,4 +21,4 @@ export default defineConfig({
         },
         sourcemap: true
     }
-});
+}));
