@@ -40,8 +40,8 @@
     {"@context":"http://www.schema.org","@type":"website","name":"Matrix Animation","alternateName":"DotGlitch Matrix Animation","url":"https://matrix.dotglitch.dev/"}
     </script>
 
-    <script>window.exports = window</script>
-    <script src="https://www.unpkg.com/matrix-animation/dist/main.js"></script>
+    <!-- <script>window.exports = window</script> -->
+    <!-- <script src="https://www.unpkg.com/matrix-animation/dist/main.js"></script> -->
     <style>
         html, body { width: 100%; height: 100%; margin: 0; background-color: #121212; color: #efefef;}
         * { box-sizing: border-box}
@@ -58,6 +58,7 @@
 
     <script type="module">
         import { Pane } from 'https://cdn.jsdelivr.net/npm/tweakpane@4.0.3/dist/tweakpane.min.js';
+        import { MatrixAnimation } from './src/main.ts';
     
         const defaults = Object.seal({
             autoStart: true,
