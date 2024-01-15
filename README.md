@@ -9,8 +9,7 @@
 2. Import:
 ##### : 
 ```html
-<script>window.exports = window</script>
-<script src="https://www.unpkg.com/matrix-animation/dist/main.js"></script>
+<script src="https://www.unpkg.com/matrix-animation/dist/matrix-animation.cjs"></script>
 ```
 ##### Module:
 ```js
