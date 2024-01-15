@@ -40,20 +40,21 @@
     {"@context":"http://www.schema.org","@type":"website","name":"Matrix Animation","alternateName":"DotGlitch Matrix Animation","url":"https://matrix.dotglitch.dev/"}
     </script>
 
-    <!-- <script>window.exports = window</script> -->
-    <!-- <script src="https://www.unpkg.com/matrix-animation/dist/main.js"></script> -->
     <style>
         html, body { width: 100%; height: 100%; margin: 0; background-color: #121212; color: #efefef;}
         * { box-sizing: border-box}
         
         .container { height: 100% }
-        .tweakpane { position: fixed; top: 10px; right: 10px}
+        .tweakpane { position: fixed; top: 10px; right: 10px; transition: transform 200ms ease;}
+        .show-button { position: fixed; top: 0; right: -100vw; transition: opacity 200ms ease; width: 160px; height: 64px; background-color: #555; padding: 6px 12px; border: 0; border-bottom-left-radius: 6px; font-family:Arial, Helvetica, sans-serif; font-size: 24px; }
+        .show-button:hover { opacity: 1 !important }
     </style>
 </head>
 <body>
     <div style="height: 100%;">
         <div class="container"></div>
         <div class="tweakpane"></div>
+        <div class="show-button">Show Panel</div>
     </div>
 
     <script type="module">
@@ -98,9 +99,15 @@
         }
 
         const initPane = () => {
+            const element = document.querySelector(".tweakpane");
+            const btn = document.querySelector(".show-button");
+
+            element.style.right = "10px";
+            btn.style.opacity = 1;
+            btn.style.right = "-100vw";
 
             const pane = new Pane({
-                container: document.querySelector(".tweakpane")
+                container: element
             });
 
             const base = pane.addFolder({
@@ -136,7 +143,7 @@
                 view: 'separator',
             });
 
-            const btn = pane.addButton({
+            pane.addButton({
                 title: 'Reset',
                 // label: 'counter',   // optional
             }).on('click', () => {
@@ -144,6 +151,24 @@
                 // pane.refresh();
                 pane.dispose();
                 initPane();
+            });
+            pane.addButton({
+                title: 'Hide',
+            }).on('click', () => {
+                element.style.transform = "translateX(calc(100% + 10px))";
+                btn.style.opacity = 1;
+                // element.style.left = "100%";
+
+                btn.style.right = "0";
+
+                btn.onclick = () => {
+                    btn.dispose();
+                    element.style.transform = '';
+                }
+
+                setTimeout(() => {
+                    btn.style.opacity = 0;
+                }, 3000);
             });
         }
         initPane();
