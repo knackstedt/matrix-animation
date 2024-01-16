@@ -310,9 +310,6 @@ export class MatrixAnimation {
     private drawRain() {
         let i = this.raindrops.length;
 
-        // this.ctx.shadowColor = this.options.bloomColor;
-        // this.ctx.shadowBlur = this.options.bloomSize;
-
         // Call clear before we apply the fade fill
         this.ctx.shadowColor = this.options.trailBloomColor;
         this.ctx.shadowBlur = this.options.trailBloomSize;
@@ -373,6 +370,23 @@ class MatrixRaindrop {
     }
 
     initMoveDirection() {
+        const keepBoundsVertically = () => {
+            if (this.x > this.matrixAnimation.canvasWidth) {
+                this.x = 1;
+            }
+            else if (this.x < 0) {
+                this.x = this.matrixAnimation.canvasWidth-1;
+            }
+        }
+        const keepBoundsHorizontally = () => {
+            if (this.y > this.matrixAnimation.canvasHeight) {
+                this.y = 1;
+            }
+            else if (this.y < 0) {
+                this.y = this.matrixAnimation.canvasHeight-1;
+            }
+        }
+
         switch (this.config.direction) {
             case "LR": {
                 this.shiftDirection = () => {
@@ -382,6 +396,7 @@ class MatrixRaindrop {
 
                         this.x = randomFloat(-100, 0);
                     }
+                    keepBoundsHorizontally();
                 };
                 break;
             }
@@ -393,6 +408,7 @@ class MatrixRaindrop {
 
                         this.y = randomFloat(0, this.matrixAnimation.canvasHeight + 100);
                     }
+                    keepBoundsVertically();
                 };
                 break;
             }
@@ -404,6 +420,7 @@ class MatrixRaindrop {
 
                         this.x = randomFloat(0, this.matrixAnimation.canvasWidth + 100);
                     }
+                    keepBoundsHorizontally();
                 };
                 break;
             }
@@ -417,6 +434,7 @@ class MatrixRaindrop {
                         this.y = randomFloat(-100, 0);
                         // this.xSpeed = config.xSpeed;
                     }
+                    keepBoundsVertically();
                 };
                 break;
             }
@@ -469,6 +487,11 @@ class MatrixRaindrop {
                 this.x = randomInt(-20, 0);
             }
         }
+
+        if (this.config.jitterDownStrength || this.config.jitterUpStrength)
+            this.y += randomFloat(-this.config.jitterUpStrength ?? 0, this.config.jitterDownStrength ?? 0);
+        if (this.config.jitterLeftStrength || this.config.jitterRightStrength)
+            this.x += randomFloat(-this.config.jitterLeftStrength ?? 0, this.config.jitterRightStrength ?? 0);
 
         this.shiftDirection();
     };

@@ -137,6 +137,30 @@ export type MatrixAnimationRaindropOptions = Partial<{
      */
     direction: "TD" | "LR" | "BU" | "RL";
     /**
+     * Control how much a raindrop can jitter to the left per frame.
+     * 
+     * @default 0
+     */
+    jitterLeftStrength: number;
+    /**
+     * Control how much a raindrop can jitter to the right per frame.
+     * 
+     * @default 0
+     */
+    jitterRightStrength: number;
+    /**
+     * Control how much a raindrop can jitter upwards per frame.
+     * 
+     * @default 0
+     */
+    jitterUpStrength: number;
+    /**
+     * Control how much a raindrop can jitter downwards per frame.
+     * 
+     * @default 0
+     */
+    jitterDownStrength: number;
+    /**
      * Control the character list that the drop can choose from.
      * 
      * @default "<UNICODE_BRAILLE_CHARACTERS>"
