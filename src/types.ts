@@ -42,7 +42,7 @@ export type MatrixOptions = Partial<{
      */    
     rainWidth: number;
     /**
-     * Control how wide the rain droplets are.
+     * Control how tall the rain droplets are.
      * @default 0
      * @experimental
      */
@@ -67,9 +67,15 @@ export type MatrixOptions = Partial<{
     /**
      * Control the amount of bloom for the heads of the drop.
      * 
-     * @default "0
+     * @default 0
      */
     headBloomSize: number;
+    /**
+     * WIP - move all raindrops in sync
+     * @experimental
+     * @default true
+     */
+    syncFrame: boolean;
     /**
      * Control the manner in which trail colors are applied
      * - `random` picks from the `trailColors` array randomly.
