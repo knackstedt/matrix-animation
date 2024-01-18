@@ -10,7 +10,7 @@
     "build:pages": "tsc && vite build --mode pages",
     "preview": "vite preview"
   },
-  "main": "dist/main.js",
+  "main": "dist/matrix-animation.js",
   "files": [
     "dist",
     "LICENSE",
