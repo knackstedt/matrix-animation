@@ -166,6 +166,8 @@ export class MatrixAnimation {
         this.options.minFrameTime = this.options.minFrameTime ?? 50;
         this.options.rainDensity = this.options.rainDensity ?? 2;
         this.options.columnRain = this.options.columnRain ?? true;
+        this.options.rainDrop.jitterDownStrength;
+        this.options.rainDrop.jitterUpStrength;
     }
 
     private setupElements() {
@@ -261,6 +263,7 @@ export class MatrixAnimation {
 
         this.createRaindrops();
 
+        this.ctx.textAlign = "center";
         this.ctx.imageSmoothingEnabled = false;
 
         // Preemptively draw the characters
@@ -427,12 +430,11 @@ class MatrixRaindrop {
             case "TD":
             default: {
                 this.shiftDirection = () => {
-                    this.y += randomFloat(4,12);//(this.matrixAnimation.options.rainHeight??0) + randomFloat(-2, 4);
+                    this.y += (this.matrixAnimation.options.rainHeight ?? 0);
                     if (this.y > this.matrixAnimation.canvasHeight) {
                         this.randomizeChars();
 
                         this.y = randomFloat(-100, 0);
-                        // this.xSpeed = config.xSpeed;
                     }
                     keepBoundsVertically();
                 };
@@ -489,9 +491,9 @@ class MatrixRaindrop {
         }
 
         if (this.config.jitterDownStrength || this.config.jitterUpStrength)
-            this.y += randomFloat(-this.config.jitterUpStrength ?? 0, this.config.jitterDownStrength ?? 0);
+            this.y += randomFloat(-(this.config.jitterUpStrength ?? 0), this.config.jitterDownStrength ?? 0);
         if (this.config.jitterLeftStrength || this.config.jitterRightStrength)
-            this.x += randomFloat(-this.config.jitterLeftStrength ?? 0, this.config.jitterRightStrength ?? 0);
+            this.x += randomFloat(-(this.config.jitterLeftStrength ?? 0), this.config.jitterRightStrength ?? 0);
 
         this.shiftDirection();
     };
