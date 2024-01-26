@@ -72,6 +72,14 @@
         let currentConfig = structuredClone(MatrixPreset);
         const animation = new MatrixAnimation(".container", currentConfig);
 
+        const presetMap = {
+            "default": MatrixPreset,
+            "digitalRain": DigitalRainPreset,
+            "rain": RainPreset,
+            "meteor": MeteorRainPreset
+        }
+        let currentPreset = 'default';
+
         let pane;
         const initPane = () => {
 
@@ -92,15 +100,15 @@
                 expanded: true,
             });
 
-            base.addBinding({ preset: 'default' }, 'preset', {
+            base.addBinding({ preset: currentPreset }, 'preset', {
                 options: {
                     "Matrix": 'default',
-                    "Digital Rain": DigitalRainPreset,
-                    "Rain": RainPreset,
-                    "Meteor Rain": MeteorRainPreset,
+                    "Digital Rain": 'digitalRain',
+                    "Rain": 'rain',
+                    "Meteor Rain": 'meteor',
                 },
             }).on('change', ({ value }) => {
-                const options = value == 'default' ? MatrixPreset : value;
+                const options = presetMap[currentPreset = value];
                 currentConfig = structuredClone(options);
                 
                 // Update the animation
