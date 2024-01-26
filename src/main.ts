@@ -1,4 +1,4 @@
-import { MatrixOptions as MatrixAnimationOptions, MatrixAnimationRaindropOptions } from './types';
+import { MatrixOptions, MatrixRaindropOptions } from './types';
 
 
 const randomInt = (min: number, max: number) => {
@@ -17,39 +17,22 @@ export class MatrixAnimation {
     get ctx() { return this._ctx ?? (this._ctx = this.canvas.getContext('2d')); }
 
     frameId = 0;
+    fadeInterval = 0;
     // full screen dimensions
     canvasWidth = 0;
     canvasHeight = 0;
-    charLists = [
-        '⠁⠂⠃⠄⠅⠆⠇⠈⠉⠊⠋⠌⠍⠎⠏⠐⠑⠒⠓⠔⠕⠖⠗⠘⠙⠚⠛⠜⠝⠞⠟⠠⠡⠢⠣⠤⠥⠦⠧⠨⠩⠪⠫⠬⠭⠮⠯⠰⠱⠲⠳⠴⠵⠶⠷⠸⠹⠺⠻⠼⠽⠾⠿⡀⡁⡂⡃⡄⡅⡆⡇⡈⡉⡊⡋⡌⡍⡎⡏⡐⡑⡒⡓⡔⡕⡖⡗⡘⡙⡚⡛⡜⡝⡞⡟⡠⡡⡢⡣⡤⡥⡦⡧⡨⡩⡪⡫⡬⡭⡮⡯⡰⡱⡲⡳⡴⡵⡶⡷⡸⡹⡺⡻⡼⡽⡾⡿⢀⢁⢂⢃⢄⢅⢆⢇⢈⢉⢊⢋⢌⢍⢎⢏⢐⢑⢒⢓⢔⢕⢖⢗⢘⢙⢚⢛⢜⢝⢞⢟⢠⢡⢢⢣⢤⢥⢦⢧⢨⢩⢪⢫⢬⢭⢮⢯⢰⢱⢲⢳⢴⢵⢶⢷⢸⢹⢺⢻⢼⢽⢾⢿⣀⣁⣂⣃⣄⣅⣆⣇⣈⣉⣊⣋⣌⣍⣎⣏⣐⣑⣒⣓⣔⣕⣖⣗⣘⣙⣚⣛⣜⣝⣞⣟⣠⣡⣢⣣⣤⣥⣦⣧⣨⣩⣪⣫⣬⣭⣮⣯⣰⣱⣲⣳⣴⣵⣶⣷⣸⣹⣺⣻⣼⣽⣾⣿',
-        // 'ঀঅআইঈউঊঋঌএঐওঔকখগঘঙচছজঝঞটঠডঢণতথদধনপফবভমযরলশষসহঽৎড়ঢ়য়ৠৡ০১২৩৪৫৬৭৮৯ৰৱ৲৳৴৵৶৷৸৹৺৻ৼ৽',
-        // 'ꤰꤱꤲꤳꤴꤵꤶꤷꤸꤹꤺꤻꤼꤽꤾꤿꥀꥁꥂꥃꥄꥅꥆ',
-        // 'ᚠᚡᚢᚣᚤᚥᚦᚧᚨᚩᚪᚫᚬᚭᚮᚯᚰᚱᚲᚳᚴᚵᚶᚷᚸᚹᚺᚻᚼᚽᚾᚿᛀᛁᛂᛃᛄᛅᛆᛇᛈᛉᛊᛋᛌᛍᛎᛏᛐᛑᛒᛓᛔᛕᛖᛗᛘᛙᛚᛛᛜᛝᛞᛟᛠᛡᛢᛣᛤᛥᛦᛧᛨᛩᛪ᛫᛬᛭ᛮᛯᛰᛱᛲᛳᛴᛵᛶᛷᛸ',
-        // '𝌀𝌁𝌂𝌃𝌄𝌅𝌆𝌇𝌈𝌉𝌊𝌋𝌌𝌍𝌎𝌏𝌐𝌑𝌒𝌓𝌔𝌕𝌖𝌗𝌘𝌙𝌚𝌛𝌜𝌝𝌞𝌟𝌠𝌡𝌢𝌣𝌤𝌥𝌦𝌧𝌨𝌩𝌪𝌫𝌬𝌭𝌮𝌯𝌰𝌱𝌲𝌳𝌴𝌵𝌶𝌷𝌸𝌹𝌺𝌻𝌼𝌽𝌾𝌿𝍀𝍁𝍂𝍃𝍄𝍅𝍆𝍇𝍈𝍉𝍊𝍋𝍌𝍍𝍎𝍏𝍐𝍑𝍒𝍓𝍔𝍕𝍖',
-        // '𑨀𑨋𑨌𑨍𑨎𑨏𑨐𑨑𑨒𑨓𑨔𑨕𑨖𑨗𑨘𑨙𑨚𑨛𑨜𑨝𑨞𑨟𑨠𑨡𑨢𑨣𑨤𑨥𑨦𑨧𑨨𑨩𑨪𑨫𑨬𑨭𑨮𑨯𑨰𑨱𑨲𑨿𑩀𑩂𑩃𑩄𑩅𑩆',
-        // '𐰀𐰁𐰂𐰃𐰄𐰅𐰆𐰇𐰈𐰉𐰊𐰋𐰌𐰍𐰎𐰏𐰐𐰑𐰒𐰓𐰔𐰕𐰖𐰗𐰘𐰙𐰚𐰛𐰜𐰝𐰞𐰟𐰠𐰡𐰢𐰣𐰤𐰥𐰦𐰧𐰨𐰩𐰪𐰫𐰬𐰭𐰮𐰯𐰰𐰱𐰲𐰳𐰴𐰵𐰶𐰷𐰸𐰹𐰺𐰻𐰼𐰽𐰾𐰿𐱀𐱁𐱂𐱃𐱄𐱅𐱆𐱇𐱈',
-        // '𐄇𐄈𐄉𐄊𐄋𐄌𐄍𐄎𐄏𐄐𐄑𐄒𐄓𐄔𐄕𐄖𐄗𐄘𐄙𐄚𐄛𐄜𐄝𐄞𐄟𐄠𐄡𐄢𐄣𐄤𐄥𐄦𐄧𐄨𐄩𐄪𐄫𐄬𐄭𐄮𐄯𐄰𐄱𐄲𐄳',
-        // '🞀🞁🞂🞃🞄🞅🞆🞇🞈🞉🞊🞋🞌🞍🞎🞏🞐🞑🞒🞓🞔🞕🞖🞗🞘🞙🞚🞛🞜🞝🞞🞟🞠🞡🞢🞣🞤🞥🞦🞧🞨🞩🞪🞫🞬🞭🞮🞯🞰🞱🞲🞳🞴🞵🞶🞷🞸🞹🞺🞻🞼🞽🞾🞿🟀🟁🟂🟃🟄🟅🟆🟇🟈🟉🟊🟋🟌🟍🟎🟏🟐🟑🟒🟓🟔🟕🟖🟗🟘',
-        // '🁢🁣🁤🁥🁦🁧🁨🁩🁪🁫🁬🁭🁮🁯🁩🁪🁫🁬🁭🁮🁯🁰🁱🁲🁳🁴🁵🁶🁷🁸🁹🁺🁻🁼🁽🁾🁿🂀🂁🂂🂃🂄🂅🂆🂇🂈🂉🂊🂋🂌🂍🂎🂏🂐🂑🂒🂓',
-        // '🀀🀁🀂🀃🀅🀆🀇🀈🀉🀊🀋🀌🀍🀎🀏🀐🀑🀒🀓🀔🀕🀖🀗🀘🀙🀚🀛🀜🀝🀞🀟🀠🀡🀢🀣🀤🀥🀦🀧🀨🀩🀪🀫',
-        // '🂠🂡🂢🂣🂤🂥🂦🂧🂨🂩🂪🂫🂬🂭🂮🂱🂲🂳🂴🂵🂶🂷🂸🂹🂺🂻🂼🂽🂾🃁🃂🃃🃄🃅🃆🃇🃈🃉🃊🃋🃌🃍🃎🂱🂲🂳🂴🂵🂶🂷🂸🂹🂺🂻🂼🂽🂾🃁🃂🃃🃄🃅🃆🃇🃈🃉🃊🃋🃌🃍🃎🃑🃒🃓🃔🃕🃖🃗🃘🃙🃚🃛🃜🃝🃞🃟',
-        // '🀰🀱🀲🀳🀴🀵🀶🀷🀸🀹🀺🀻🀼🀽🀾🀿🁀🁁🁂🁃🁄🁅🁆🁇🁈🁉🁊🁋🁌🁍🁎🁏🁐🁑🁒🁓🁔🁕🁖🁗🁘🁙🁚🁛🁜🁝🁞🁟🁠🁡',
-        // '𑫀𑫁𑫂𑫃𑫄𑫅𑫆𑫇𑫈𑫉𑫊𑫋𑫌𑫍𑫎𑫏𑫐𑫑𑫒𑫓𑫔𑫕𑫖𑫗𑫘𑫙𑫚𑫛𑫜𑫝𑫞𑫟𑫠𑫡𑫢𑫣𑫤𑫥𑫦𑫧𑫨𑫩𑫪𑫫𑫬𑫭𑫮𑫯𑫰𑫱𑫲𑫳𑫴𑫵𑫶𑫷𑫸',
-        // 'ᮃᮄᮅᮆᮇᮈᮉᮊᮋᮌᮍᮎᮏᮐᮑᮒᮓᮔᮕᮖᮗᮘᮙᮚᮛᮜᮝᮞᮟᮠᮮᮯ᮰᮱᮲᮳᮴᮵᮶᮷᮸᮹ᮺᮻᮼᮽᮾᮿᯀᯁᯂᯃᯄᯅᯆᯇᯈᯉᯊᯋᯌᯍᯎᯏᯐᯑᯒᯓᯔᯕᯖᯗᯘᯙᯚᯛᯜᯝᯞᯟᯠᯡᯢᯣᯤᯥ',
-        // '𛅰𛅱𛅲𛅳𛅴𛅵𛅶𛅷𛅸𛅹𛅺𛅻𛅼𛅽𛅾𛅿𛆀𛆁𛆂𛆃𛆄𛆅𛆆𛆇𛆈𛆉𛆊𛆋𛆌𛆍𛆎𛆏𛆐𛆑𛆒𛆓𛆔𛆕𛆖𛆗𛆘𛆙𛆚𛆛𛆜𛆝𛆞𛆟𛆠𛆡𛆢𛆣𛆤𛆥𛆦𛆧𛆨𛆩𛆪𛆫𛆬𛆭𛆮𛆯𛆰𛆱𛆲𛆳𛆴𛆵𛆶𛆷𛆸𛆹𛆺𛆻𛆼𛆽𛆾𛆿𛇀𛇁𛇂𛇃𛇄𛇅𛇆𛇇𛇈𛇉𛇊𛇋𛇌𛇍𛇎𛇏𛇐𛇑𛇒𛇓𛇔𛇕𛇖𛇗𛇘𛇙𛇚𛇛𛇜𛇝𛇞𛇟𛇠𛇡𛇢𛇣𛇤𛇥𛇦𛇧𛇨𛇩𛇪𛇫𛇬𛇭𛇮𛇯𛇰𛇱𛇲𛇳𛇴𛇵𛇶𛇷𛇸𛇹𛇺𛇻𛇼𛇽𛇾𛇿𛈀𛈁𛈂𛈃𛈄𛈅𛈆𛈇𛈈𛈉𛈊𛈋𛈌𛈍𛈎𛈏𛈐𛈑𛈒𛈓𛈔𛈕𛈖𛈗𛈘𛈙𛈚𛈛𛈜𛈝𛈞𛈟𛈠𛈡𛈢𛈣𛈤𛈥𛈦𛈧𛈨𛈩𛈪𛈫𛈬𛈭𛈮𛈯𛈰𛈱𛈲𛈳𛈴𛈵𛈶𛈷𛈸𛈹𛈺𛈻𛈼𛈽𛈾𛈿𛉀𛉁𛉂𛉃𛉄𛉅𛉆𛉇𛉈𛉉𛉊𛉋𛉌𛉍𛉎𛉏𛉐𛉑𛉒𛉓𛉔𛉕𛉖𛉗𛉘𛉙𛉚𛉛𛉜𛉝𛉞𛉟𛉠𛉡𛉢𛉣𛉤𛉥𛉦𛉧𛉨𛉩𛉪𛉫𛉬𛉭𛉮𛉯𛉰𛉱𛉲𛉳𛉴𛉵𛉶𛉷𛉸𛉹𛉺𛉻𛉼𛉽𛉾𛉿𛊀𛊁𛊂𛊃𛊄𛊅𛊆𛊇𛊈𛊉𛊊𛊋𛊌𛊍𛊎𛊏𛊐𛊑𛊒𛊓𛊔𛊕𛊖𛊗𛊘𛊙𛊚𛊛𛊜𛊝𛊞𛊟𛊠𛊡𛊢𛊣𛊤𛊥𛊦𛊧𛊨𛊩𛊪𛊫𛊬𛊭𛊮𛊯𛊰𛊱𛊲𛊳𛊴𛊵𛊶𛊷𛊸𛊹𛊺𛊻𛊼𛊽𛊾𛊿𛋀𛋁𛋂𛋃𛋄𛋅𛋆𛋇𛋈𛋉𛋊𛋋𛋌𛋍𛋎𛋏𛋐𛋑𛋒𛋓𛋔𛋕𛋖𛋗𛋘𛋙𛋚𛋛𛋜𛋝𛋞𛋟𛋠𛋡𛋢𛋣𛋤𛋥𛋦𛋧𛋨𛋩𛋪𛋫𛋬𛋭𛋮𛋯𛋰𛋱𛋲𛋳𛋴𛋵𛋶𛋷𛋸𛋹𛋺𛋻',
-        // 'ꀀꀁꀂꀃꀄꀅꀆꀇꀈꀉꀊꀋꀌꀍꀎꀏꀐꀑꀒꀓꀔꀕꀖꀗꀘꀙꀚꀛꀜꀝꀞꀟꀠꀡꀢꀣꀤꀥꀦꀧꀨꀩꀪꀫꀬꀭꀮꀯꀰꀱꀲꀳꀴꀵꀶꀷꀸꀹꀺꀻꀼꀽꀾꀿꁀꁁꁂꁃꁄꁅꁆꁇꁈꁉꁊꁋꁌꁍꁎꁏꁐꁑꁒꁓꁔꁕꁖꁗꁘꁙꁚꁛꁜꁝꁞꁟꁠꁡꁢꁣꁤꁥꁦꁧꁨꁩꁪꁫꁬꁭꁮꁯꁰꁱꁲꁳꁴꁵꁶꁷꁸꁹꁺꁻꁼꁽꁾꁿꂀꂁꂂꂃꂄꂅꂆꂇꂈꂉꂊꂋꂌꂍꂎꂏꂐꂑꂒꂓꂔꂕꂖꂗꂘꂙꂚꂛꂜꂝꂞꂟꂠꂡꂢꂣꂤꂥꂦꂧꂨꂩꂪꂫꂬꂭꂮꂯꂰꂱꂲꂳꂴꂵꂶꂷꂸꂹꂺꂻꂼꂽꂾꂿꃀꃁꃂꃃꃄꃅꃆꃇꃈꃉꃊꃋꃌꃍꃎꃏꃐꃑꃒꃓꃔꃕꃖꃗꃘꃙꃚꃛꃜꃝꃞꃟꃠꃡꃢꃣꃤꃥꃦꃧꃨꃩꃪꃫꃬꃭꃮꃯꃰꃱꃲꃳꃴꃵꃶꃷꃸꃹꃺꃻꃼꃽꃾꃿꄀꄁꄂꄃꄄꄅꄆꄇꄈꄉꄊꄋꄌꄍꄎꄏꄐꄑꄒꄓꄔꄕꄖꄗꄘꄙꄚꄛꄜꄝꄞꄟꄠꄡꄢꄣꄤꄥꄦꄧꄨꄩꄪꄫꄬꄭꄮꄯꄰꄱꄲꄳꄴꄵꄶꄷꄸꄹꄺꄻꄼꄽꄾꄿꅀꅁꅂꅃꅄꅅꅆꅇꅈꅉꅊꅋꅌꅍꅎꅏꅐꅑꅒꅓꅔꅕꅖꅗꅘꅙꅚꅛꅜꅝꅞꅟꅠꅡꅢꅣꅤꅥꅦꅧꅨꅩꅪꅫꅬꅭꅮꅯꅰꅱꅲꅳꅴꅵꅶꅷꅸꅹꅺꅻꅼꅽꅾꅿꆀꆁꆂꆃꆄꆅꆆꆇꆈꆉꆊꆋꆌꆍꆎꆏꆐꆑꆒꆓꆔꆕꆖꆗꆘꆙꆚꆛꆜꆝꆞꆟꆠꆡꆢꆣꆤꆥꆦꆧꆨꆩꆪꆫꆬꆭꆮꆯꆰꆱꆲꆳꆴꆵꆶꆷꆸꆹꆺꆻꆼꆽꆾꆿꇀꇁꇂꇃꇄꇅꇆꇇꇈꇉꇊꇋꇌꇍꇎꇏꇐꇑꇒꇓꇔꇕꇖꇗꇘꇙꇚꇛꇜꇝꇞꇟꇠꇡꇢꇣꇤꇥꇦꇧꇨꇩꇪꇫꇬꇭꇮꇯꇰꇱꇲꇳꇴꇵꇶꇷꇸꇹꇺꇻꇼꇽꇾꇿꈀꈁꈂꈃꈄꈅꈆꈇꈈꈉꈊꈋꈌꈍꈎꈏꈐꈑꈒꈓꈔꈕꈖꈗꈘꈙꈚꈛꈜꈝꈞꈟꈠꈡꈢꈣꈤꈥꈦꈧꈨꈩꈪꈫꈬꈭꈮꈯꈰꈱꈲꈳꈴꈵꈶꈷꈸꈹꈺꈻꈼꈽꈾꈿꉀꉁꉂꉃꉄꉅꉆꉇꉈꉉꉊꉋꉌꉍꉎꉏꉐꉑꉒꉓꉔꉕꉖꉗꉘꉙꉚꉛꉜꉝꉞꉟꉠꉡꉢꉣꉤꉥꉦꉧꉨꉩꉪꉫꉬꉭꉮꉯꉰꉱꉲꉳꉴꉵꉶꉷꉸꉹꉺꉻꉼꉽꉾꉿꊀꊁꊂꊃꊄꊅꊆꊇꊈꊉꊊꊋꊌꊍꊎꊏꊐꊑꊒꊓꊔꊕꊖꊗꊘꊙꊚꊛꊜꊝꊞꊟꊠꊡꊢꊣꊤꊥꊦꊧꊨꊩꊪꊫꊬꊭꊮꊯꊰꊱꊲꊳꊴꊵꊶꊷꊸꊹꊺꊻꊼꊽꊾꊿꋀꋁꋂꋃꋄꋅꋆꋇꋈꋉꋊꋋꋌꋍꋎꋏꋐꋑꋒꋓꋔꋕꋖꋗꋘꋙꋚꋛꋜꋝꋞꋟꋠꋡꋢꋣꋤꋥꋦꋧꋨꋩꋪꋫꋬꋭꋮꋯꋰꋱꋲꋳꋴꋵꋶꋷꋸꋹꋺꋻꋼꋽꋾꋿꌀꌁꌂꌃꌄꌅꌆꌇꌈꌉꌊꌋꌌꌍꌎꌏꌐꌑꌒꌓꌔꌕꌖꌗꌘꌙꌚꌛꌜꌝꌞꌟꌠꌡꌢꌣꌤꌥꌦꌧꌨꌩꌪꌫꌬꌭꌮꌯꌰꌱꌲꌳꌴꌵꌶꌷꌸꌹꌺꌻꌼꌽꌾꌿꍀꍁꍂꍃꍄꍅꍆꍇꍈꍉꍊꍋꍌꍍꍎꍏꍐꍑꍒꍓꍔꍕꍖꍗꍘꍙꍚꍛꍜꍝꍞꍟꍠꍡꍢꍣꍤꍥꍦꍧꍨꍩꍪꍫꍬꍭꍮꍯꍰꍱꍲꍳꍴꍵꍶꍷꍸꍹꍺꍻꍼꍽꍾꍿꎀꎁꎂꎃꎄꎅꎆꎇꎈꎉꎊꎋꎌꎍꎎꎏꎐꎑꎒꎓꎔꎕꎖꎗꎘꎙꎚꎛꎜꎝꎞꎟꎠꎡꎢꎣꎤꎥꎦꎧꎨꎩꎪꎫꎬꎭꎮꎯꎰꎱꎲꎳꎴꎵꎶꎷꎸꎹꎺꎻꎼꎽꎾꎿꏀꏁꏂꏃꏄꏅꏆꏇꏈꏉꏊꏋꏌꏍꏎꏏꏐꏑꏒꏓꏔꏕꏖꏗꏘꏙꏚꏛꏜꏝꏞꏟꏠꏡꏢꏣꏤꏥꏦꏧꏨꏩꏪꏫꏬꏭꏮꏯꏰꏱꏲꏳꏴꏵꏶꏷꏸꏹꏺꏻꏼꏽꏾꏿꐀꐁꐂꐃꐄꐅꐆꐇꐈꐉꐊꐋꐌꐍꐎꐏꐐꐑꐒꐓꐔꐕꐖꐗꐘꐙꐚꐛꐜꐝꐞꐟꐠꐡꐢꐣꐤꐥꐦꐧꐨꐩꐪꐫꐬꐭꐮꐯꐰꐱꐲꐳꐴꐵꐶꐷꐸꐹꐺꐻꐼꐽꐾꐿꑀꑁꑂꑃꑄꑅꑆꑇꑈꑉꑊꑋꑌꑍꑎꑏꑐꑑꑒꑓꑔꑕꑖꑗꑘꑙꑚꑛꑜꑝꑞꑟꑠꑡꑢꑣꑤꑥꑦꑧꑨꑩꑪꑫꑬꑭꑮꑯꑰꑱꑲꑳꑴꑵꑶꑷꑸꑹꑺꑻꑼꑽꑾꑿꒀꒁꒂꒃꒄꒅꒆꒇꒈꒉꒊꒋꒌ',
-    ];
-    charArrs = [];
+
+    availableCharSets = [];
     raindrops: MatrixRaindrop[] = [];
 
-    private maxColumns = 0;
     private mutationObserver: MutationObserver;
     private resizeObserver: ResizeObserver;
     // Placeholder method that
     private performCanvasShift: Function = () => { /* NOP */ };
-    private lastFrameTime = Date.now();
-    private stopAnimation = false; // Interrupt any active animation (used as a safety)
+    // private lastFrameTime = Date.now();
+    public stopAnimation = false; // Interrupt any active animation (used as a safety)
     private hasCreatedCanvas = false;
+    rainWidth = 0;
 
     /**
      * 
@@ -58,9 +41,9 @@ export class MatrixAnimation {
      */
     constructor(
         private selector: string | HTMLElement,
-        public options: MatrixAnimationOptions = {}
+        public options: MatrixOptions = {}
     ) {
-        this.setDefaultOptions();
+        this.applyOptions(options);
 
         this.setupElements();
 
@@ -79,16 +62,8 @@ export class MatrixAnimation {
         });
         this.mutationObserver.observe(this.container, { childList: true });
 
-        // Spread operator correctly serializes unicode
-        this.charLists.forEach(list => {
-            this.charArrs.push([...list]);
-        });
-
         this.initCanvasShift();
         this.initCanvas();
-        if (this.options.autoStart != false) {
-            this.render();
-        } 
     }
 
     /**
@@ -99,6 +74,10 @@ export class MatrixAnimation {
         this.resizeObserver.disconnect();
         this.mutationObserver.disconnect();
 
+        this.raindrops.forEach(drop => {
+            
+        });
+
         if (this.hasCreatedCanvas) {
             this.canvas.remove();
         }
@@ -108,7 +87,16 @@ export class MatrixAnimation {
      * Resume the animation from the 'paused' state
      */
     play() {
+        if (this.fadeInterval) clearInterval(this.fadeInterval);
+        if (this.frameId) cancelAnimationFrame(this.frameId);
+
         this.stopAnimation = false;
+        this.fadeInterval = setInterval(() => {
+            // Fade everything slightly
+            this.ctx.fillStyle = `rgba(0,0,0,${this.options.fadeStrength ?? 0.05})`;
+            this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+        }, 20);
+        
         this.render();
     }
 
@@ -118,6 +106,58 @@ export class MatrixAnimation {
     pause() {
         this.stopAnimation = true;
         cancelAnimationFrame(this.frameId);
+        clearInterval(this.fadeInterval);
+    }
+
+    applyOptions(options: MatrixOptions = this.options) {
+        if (typeof this.options != "object")
+            throw new Error("Options must be an object");
+
+        this.options.minFrameTime = options.minFrameTime ?? 50;
+        this.options.rainGenerator = options.rainGenerator ?? {};
+        this.options.rainGenerator.density = this.options.rainGenerator?.density ?? options.rainGenerator?.density ?? 2;
+
+        if (!Array.isArray(this.options.rainDrop)) {
+            this.options.rainDrop = this.options.rainDrop ?? {};
+            this.rainWidth =
+                this.options.rainDrop.rainWidth =
+                this.options.rainDrop.rainWidth ?? 12;
+            this.options.rainDrop.alignToColumns = this.options.rainDrop.alignToColumns ?? true;
+        }
+        else {
+            this.rainWidth = 12;
+        }
+
+        Object.entries(options)
+            .filter(([key]) => key != "rainDrop")
+            .forEach(([key, value]) => this.options[key] = value);
+
+        if (typeof options.rainDrop == "object") {
+            Object.entries(options.rainDrop)
+                .forEach(([key, value]) => this.options.rainDrop[key] = value);
+        }
+
+        if (typeof options.rainGenerator == "object") {
+            Object.entries(options.rainGenerator)
+                .forEach(([key, value]) => this.options.rainGenerator[key] = value);
+        }
+
+        // Spread operator correctly serializes unicode
+        let arrs = 
+            this.options.charArrays
+            ? Array.isArray(this.options.charArrays) 
+                ? this.options.charArrays 
+                : [this.options.charArrays]
+            : !Array.isArray(this.options.rainDrop)
+                ? this.options.rainDrop.charArrays
+                    ? Array.isArray(this.options.rainDrop.charArrays) 
+                        ? this.options.rainDrop.charArrays
+                        : [this.options.rainDrop.charArrays]
+                : ["0123456789"]
+                : ["0123456789"];
+
+        // console.log(arrs)
+        this.availableCharSets = arrs;
     }
 
     /**
@@ -131,8 +171,6 @@ export class MatrixAnimation {
 
         this.canvas.width = this.canvasWidth = this.container.clientWidth;
         this.canvas.height = this.canvasHeight = this.container.clientHeight;
-
-        this.maxColumns = this.canvasWidth / (this.options.rainWidth);
 
         if (refreshRain) {
             if (widthChange > 0) {
@@ -158,16 +196,12 @@ export class MatrixAnimation {
         }
     }
 
-    private setDefaultOptions() {
-        if (typeof this.options != "object")
-            throw new Error("Options must be an object");
-
-        this.options.rainWidth = this.options.rainWidth ?? 12;
-        this.options.minFrameTime = this.options.minFrameTime ?? 50;
-        this.options.rainDensity = this.options.rainDensity ?? 2;
-        this.options.columnRain = this.options.columnRain ?? true;
-        this.options.rainDrop.jitterDownStrength;
-        this.options.rainDrop.jitterUpStrength;
+    /**
+     * Reset the raindrops
+     */
+    resetRaindrops() {
+        this.raindrops.splice(0);
+        this.createRaindrops();
     }
 
     private setupElements() {
@@ -215,7 +249,6 @@ export class MatrixAnimation {
         canvas.style.height = "100%";
         canvas.style.position = "absolute";
     }
-
 
     private initCanvasShift() {
         switch (this.options.windDirection) {
@@ -265,10 +298,9 @@ export class MatrixAnimation {
 
         this.ctx.textAlign = "center";
         this.ctx.imageSmoothingEnabled = false;
-
         // Preemptively draw the characters
-        for (let i = 0; i < this.options.warmupIterations; i++)
-            this.drawRain();
+        // for (let i = 0; i < this.options.warmupIterations; i++)
+            // this.drawRain();
     }
 
     private createRaindrops(add = false) {
@@ -277,21 +309,40 @@ export class MatrixAnimation {
             this.raindrops.splice(0);
         }
 
-        let i = this.options.disableAutoRain
-            ?   this.options.rainCount ?? 0
-            :~~(this.options.rainDensity * this.maxColumns);
+        if (Array.isArray(this.options.rainDrop)) {
+            // We have an array of preconfigured raindrops
+        }
+        else {
+            const opts = this.options.rainGenerator;
+            const maxColumns = this.canvasWidth / (this.rainWidth);
 
-        while (i--) {
-            this.raindrops.push(
-                new MatrixRaindrop(
-                    this.options.columnRain 
-                        ? (i % this.maxColumns) * this.options.rainWidth
-                        : randomFloat(0, this.canvasWidth),
-                    randomFloat(0, this.canvasHeight),
-                    this,
-                    this.options.rainDrop
-                )
-            );
+            let i = opts.count
+                ? opts.count 
+                :~~((opts.density ?? 2) * maxColumns);
+            
+            if (Array.isArray(this.options.rainDrop)) 
+                throw new Error("Cannont set rainDrops when rainGenerator is set");
+
+            const dropOpts = structuredClone(this.options.rainDrop);
+
+            while (i--) {
+                this.raindrops.push(
+                    new MatrixRaindrop(
+                        (this.options.rainDrop.alignToColumns ?? this.options.alignToColumns)
+                            ? opts.density
+                            ? (randomInt(0, maxColumns) * this.rainWidth)
+                            : (i % maxColumns) * this.rainWidth
+                            : randomFloat(0, this.canvasWidth),
+                        randomFloat(0, this.canvasHeight),
+                        this,
+                        dropOpts
+                    )
+                );
+            }
+        }
+
+        if (this.options.autoStart != false) {
+            this.play();
         }
     }
 
@@ -299,25 +350,23 @@ export class MatrixAnimation {
     private render = (() => {
         if (this.stopAnimation) return;
 
-        const t = Date.now();
-        const d = t - this.lastFrameTime;
-
-        if (d > this.options.minFrameTime) {
-            this.lastFrameTime = t;
-            this.drawRain();
-        }
-
+        this.drawRain();
         this.frameId = requestAnimationFrame(this.render);
     }).bind(this);
 
     private drawRain() {
         let i = this.raindrops.length;
+        const t = Date.now();
 
         // Call clear before we apply the fade fill
         this.ctx.shadowColor = this.options.trailBloomColor;
         this.ctx.shadowBlur = this.options.trailBloomSize;
         while (i--) {
-            this.raindrops[i].clear(this.ctx);
+            const drop = this.raindrops[i];
+            
+            if (t - drop.lastFrameTime > drop.config.frameDelay) {
+                drop.clear(this.ctx);
+            }
         }
         this.ctx.shadowColor = "";
         this.ctx.shadowBlur = 0;
@@ -326,8 +375,8 @@ export class MatrixAnimation {
             this.performCanvasShift();
 
         // Fade everything slightly
-        this.ctx.fillStyle = `rgba(0,0,0,${this.options.fadeStrength ?? 0.05})`;
-        this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+        // this.ctx.fillStyle = `rgba(0,0,0,${this.options.fadeStrength ?? 0.05})`;
+        // this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
         i = this.raindrops.length;
 
@@ -335,7 +384,13 @@ export class MatrixAnimation {
         this.ctx.shadowBlur = this.options.trailBloomSize;
 
         while (i--) {
-            this.raindrops[i].draw(this.ctx);
+            const drop = this.raindrops[i];
+
+            if (t - drop.lastFrameTime > drop.config.frameDelay) {
+                // this.raindrops[i].clear(this.ctx);
+                drop.draw(this.ctx);
+                drop.lastFrameTime = t;
+            }
         }
 
         this.ctx.shadowColor = "";
@@ -344,7 +399,7 @@ export class MatrixAnimation {
 }
 
 class MatrixRaindrop {
-    private charList: string[];
+    private charList: string[] = [];
 
     private trailChars: {
         x: number,
@@ -353,23 +408,35 @@ class MatrixRaindrop {
     }[] = [];
 
     private shiftDirection: Function;
-    private xSpeed = 0;
     private trailLength: number;
     private font: string;
+    public lastFrameTime = 0;
 
     constructor(
         public x: number,
         public y: number,
         private matrixAnimation: MatrixAnimation,
-        private config: MatrixAnimationRaindropOptions = {}
+        public config: MatrixRaindropOptions = {}
     ) {
+        this.initConfig();
         this.randomizeChars();
-
-        // this.xSpeed = config.xSpeed;
         this.initMoveDirection();
+        this.onRespawn();
+    }
 
-        this.trailLength = this.matrixAnimation.options.trailColorLogic == "sequential" ? this.config.trailColors.length : 1//Math.ceil(1 / this.opacity);
-        this.font = (this.config.fontSize ?? 14) + "px " + (this.config.fontFamily ?? "Arial");
+    private initConfig() {
+        Object.keys(this.matrixAnimation).forEach(k => {
+            this.config[k] = this.config[k] ?? this.matrixAnimation[k];
+        });
+
+        this.trailLength = 
+            this.matrixAnimation.options.trailColorLogic == "sequential" 
+            ? (this.config.trailColors ?? []).length 
+            : 1//Math.ceil(1 / this.opacity);
+        this.font = 
+            (this.config.fontSize ?? 14) + 
+            "px " + 
+            (this.config.fontFamily ?? "Arial");
     }
 
     initMoveDirection() {
@@ -393,11 +460,15 @@ class MatrixRaindrop {
         switch (this.config.direction) {
             case "LR": {
                 this.shiftDirection = () => {
-                    this.x += randomFloat(4, 12);
+                    this.x += (this.config.minMoveSpeed && this.config.maxMoveSpeed)
+                        ? randomFloat(this.config.minMoveSpeed, this.config.maxMoveSpeed)
+                        : (this.matrixAnimation.options.rainWidth ?? 0);
+
                     if (this.x > this.matrixAnimation.canvasWidth) {
                         this.randomizeChars();
 
                         this.x = randomFloat(-100, 0);
+                        this.onRespawn();
                     }
                     keepBoundsHorizontally();
                 };
@@ -405,11 +476,15 @@ class MatrixRaindrop {
             }
             case "BU": {
                 this.shiftDirection = () => {
-                    this.y -= randomFloat(4, 12);
-                    if (this.y < 0) {
+                    this.y -= (this.config.minMoveSpeed && this.config.maxMoveSpeed)
+                        ? randomFloat(this.config.minMoveSpeed, this.config.maxMoveSpeed)
+                        : (this.matrixAnimation.options.rainHeight ?? 0);
+
+                        if (this.y < 0) {
                         this.randomizeChars();
 
-                        this.y = randomFloat(0, this.matrixAnimation.canvasHeight + 100);
+                        this.y = randomFloat(this.matrixAnimation.canvasHeight, this.matrixAnimation.canvasHeight + 100);
+                        this.onRespawn();
                     }
                     keepBoundsVertically();
                 };
@@ -417,11 +492,15 @@ class MatrixRaindrop {
             }
             case "RL": {
                 this.shiftDirection = () => {
-                    this.x -= randomFloat(4, 12);
+                    this.x -= (this.config.minMoveSpeed && this.config.maxMoveSpeed)
+                        ? randomFloat(this.config.minMoveSpeed, this.config.maxMoveSpeed)
+                        : (this.matrixAnimation.options.rainWidth ?? 0);
+
                     if (this.x < 0) {
                         this.randomizeChars();
 
-                        this.x = randomFloat(0, this.matrixAnimation.canvasWidth + 100);
+                        this.x = randomFloat(this.matrixAnimation.canvasWidth, this.matrixAnimation.canvasWidth + 100);
+                        this.onRespawn();
                     }
                     keepBoundsHorizontally();
                 };
@@ -430,11 +509,15 @@ class MatrixRaindrop {
             case "TD":
             default: {
                 this.shiftDirection = () => {
-                    this.y += (this.matrixAnimation.options.rainHeight ?? 0);
+                    this.y += (this.config.minMoveSpeed && this.config.maxMoveSpeed)
+                        ? randomFloat(this.config.minMoveSpeed, this.config.maxMoveSpeed)
+                        : (this.matrixAnimation.options.rainHeight ?? 0);
+
                     if (this.y > this.matrixAnimation.canvasHeight) {
                         this.randomizeChars();
 
                         this.y = randomFloat(-100, 0);
+                        this.onRespawn();
                     }
                     keepBoundsVertically();
                 };
@@ -444,7 +527,38 @@ class MatrixRaindrop {
     }
 
     randomizeChars() {
-        this.charList = this.matrixAnimation.charArrs[~~(Math.random() * this.matrixAnimation.charArrs.length)];
+        this.charList = this.matrixAnimation.availableCharSets[~~(Math.random() * this.matrixAnimation.availableCharSets.length)];
+    }
+
+    onRespawn() {
+        if (this.matrixAnimation.options.charArrays?.length > 1) {
+            this.randomizeChars();
+        }
+
+        if (this.config.randomizeFrameDelay) {
+            this.config.frameDelay = randomInt(
+                this.config.minFrameDelay ?? 30, 
+                this.config.maxFrameDelay ?? 60
+            );
+        }
+
+        // Randomize the position when the drop respawns
+        if (this.config.randomizePosition) {
+            if (this.config.direction == "LR" || this.config.direction == "RL") {
+                const maxColumns = this.matrixAnimation.canvasHeight / (this.config.rainWidth);
+                if (this.config.alignToColumns)
+                    this.y = (randomInt(0, maxColumns) * this.config.rainWidth);
+                else
+                    this.y = randomFloat(0, this.matrixAnimation.canvasHeight);
+            }
+            else {
+                const maxColumns = this.matrixAnimation.canvasWidth / (this.config.rainWidth);
+                if (this.config.alignToColumns)
+                    this.x = (randomInt(0, maxColumns) * this.config.rainWidth);
+                else
+                    this.x = randomFloat(0, this.matrixAnimation.canvasWidth);
+            }
+        }
     }
 
     clear(ctx: CanvasRenderingContext2D) {
@@ -465,9 +579,7 @@ class MatrixRaindrop {
     }
 
     draw(ctx: CanvasRenderingContext2D) {
-        const char = this.config.charArray
-                ? this.config.charArray[randomInt(0, this.config.charArray.length - 1)]
-                : this.charList[randomInt(0, this.charList.length - 1)];
+        const char = this.charList[randomInt(0, this.charList.length - 1)];
 
         this.trailChars.unshift({ char, x: this.x, y: this.y});
         this.trailChars.splice(this.trailLength);
@@ -480,21 +592,11 @@ class MatrixRaindrop {
         ctx.shadowColor = "";
         ctx.shadowBlur = 0;
 
-        if (this.xSpeed) {
-            this.xSpeed = Math.max(this.xSpeed - .05, 0);
-
-            this.x += this.xSpeed ?? 0;
-
-            if (this.x > this.matrixAnimation.canvasWidth) {
-                this.x = randomInt(-20, 0);
-            }
-        }
-
         if (this.config.jitterDownStrength || this.config.jitterUpStrength)
             this.y += randomFloat(-(this.config.jitterUpStrength ?? 0), this.config.jitterDownStrength ?? 0);
         if (this.config.jitterLeftStrength || this.config.jitterRightStrength)
             this.x += randomFloat(-(this.config.jitterLeftStrength ?? 0), this.config.jitterRightStrength ?? 0);
 
         this.shiftDirection();
-    };
+    }
 }
