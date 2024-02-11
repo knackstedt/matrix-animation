@@ -12,7 +12,7 @@ export default defineConfig(({mode}) => ({
     build: {
         lib: mode == "pages" ? null : {
             // Could also be a dictionary or array of multiple entry points
-            entry: resolve(__dirname, 'src/main.ts'),
+            entry: resolve(__dirname, 'src/public-api.ts'),
             name: 'MatrixAnimation',
             // the proper extensions will be added
             fileName: 'matrix-animation',
