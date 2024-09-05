@@ -298,7 +298,7 @@ export type MatrixOptions = Partial<MatrixRaindropOptions & {
     /**
      * Control how many before-render iterations happen.
      * This makes rain particles appear already falling when the canvas first draws.
-     * @broken
+     * @hidden
     */
    warmupIterations: number;
 }>;
