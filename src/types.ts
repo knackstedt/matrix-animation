@@ -148,9 +148,7 @@ export type MatrixRaindropInstanceOptions = Partial<MatrixRaindropOptions & {
     /**
      * TBD.
      */
-    onLeaveView: (opts: MatrixRaindropOptions) => {
-
-    };
+    onLeaveView: (opts: MatrixRaindropOptions) => void;
 }>
 
 export type MatrixRainGeneratorOptions = Partial<{
@@ -207,7 +205,7 @@ export type MatrixOptions = Partial<MatrixRaindropOptions & {
      */
     fadeStrength: number;
     /**
-     * 
+     * Configuration for the rain generator.
      */
     rainGenerator: MatrixRainGeneratorOptions;
     /**
@@ -270,7 +268,7 @@ export type MatrixOptions = Partial<MatrixRaindropOptions & {
     /**
      * Control the amount of bloom for the trail of the drop.
      * 
-     * @default "0
+     * @default 0
      */
     trailBloomSize: number;
     /**
