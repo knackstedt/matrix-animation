@@ -95,19 +95,27 @@ export type MatrixRaindropOptions = Partial<{
      */
     randomizeFrameDelay: boolean;
     /**
-     * Control the max speed that the particle can move 
-     * in it's current direction. If not set, particle
-     * will move based on defined `rainHeight` or `rainWidth`
-     * depending on if motion is vertical or horizontal respectively
+     * Fixed move speed (pixels per step) for this drop.
+     * If set, the drop moves this many pixels each frame.
+     * Ignored when `minMoveSpeed` and `maxMoveSpeed` are both set.
+     * If none of `moveSpeed`, `minMoveSpeed`, or `maxMoveSpeed` are set,
+     * falls back to `rainHeight` (vertical) or `rainWidth` (horizontal).
+     * 
+     * @default null
+     */
+    moveSpeed: number;
+    /**
+     * Minimum move speed (pixels per step).
+     * When both `minMoveSpeed` and `maxMoveSpeed` are set, each drop
+     * receives a random speed in this range on every respawn.
      * 
      * @default null
      */
     minMoveSpeed: number;
     /**
-     * Control the max speed that the particle can move 
-     * in it's current direction. If not set, particle
-     * will move based on defined `rainHeight` or `rainWidth`
-     * depending on if motion is vertical or horizontal respectively
+     * Maximum move speed (pixels per step).
+     * When both `minMoveSpeed` and `maxMoveSpeed` are set, each drop
+     * receives a random speed in this range on every respawn.
      * 
      * @default null
      */
@@ -134,6 +142,45 @@ export type MatrixRaindropOptions = Partial<{
      * @default 14
      */
     fontSize: number;
+    /**
+     * Minimum font size when `randomizeScale` is enabled.
+     * Each raindrop will spawn with a random font size
+     * between `minFontSize` and `maxFontSize`.
+     * 
+     * @default null
+     */
+    minFontSize: number;
+    /**
+     * Maximum font size when `randomizeScale` is enabled.
+     * Each raindrop will spawn with a random font size
+     * between `minFontSize` and `maxFontSize`.
+     * 
+     * @default null
+     */
+    maxFontSize: number;
+    /**
+     * Control whether font size is randomized between
+     * `minFontSize` and `maxFontSize` on each respawn.
+     * @default false
+     */
+    randomizeScale: boolean;
+    /**
+     * When enabled, a drop's speed is derived from its font size
+     * rather than being independently randomized.
+     * 
+     * Requires `randomizeScale` with `minFontSize`/`maxFontSize`,
+     * and `minMoveSpeed`/`maxMoveSpeed` to define the speed range.
+     * The drop's position within the font size range maps linearly
+     * to a position within the speed range.
+     * 
+     * Takes priority over independent speed randomization when
+     * prerequisites are met; otherwise falls back to random speed.
+     * 
+     * - `true` — larger drops move faster
+     * - `"inverse"` — larger drops move slower
+     * @default false
+     */
+    correlateScaleSpeed: boolean | "inverse";
     /**
      * Configure the font family for the rain characters.
      * 

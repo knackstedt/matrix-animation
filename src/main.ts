@@ -94,8 +94,17 @@ export class MatrixAnimation {
         this.stopAnimation = false;
         this.fadeInterval = setInterval(() => {
             // Fade everything slightly
-            this.ctx.fillStyle = `rgba(0,0,0,${this.options.fadeStrength ?? 0.05})`;
-            this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+            const ctx = this.ctx;
+            ctx.fillStyle = `rgba(0,0,0,${this.options.fadeStrength ?? 0.05})`;
+            ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+            // Force near-black pixels to true black to prevent residue.
+            // 'color-dodge' with black (source) leaves dark pixels unchanged
+            // but we use a second pass that subtracts the residual.
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = `rgba(0,0,0,0.02)`;
+            ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+            ctx.globalCompositeOperation = 'source-over';
         }, 20);
 
         this.render();
@@ -391,6 +400,7 @@ class MatrixRaindrop {
     private shiftDirection: () => void;
     private trailLength: number;
     private font: string;
+    private moveSpeed: number = 0;
     public lastFrameTime = 0;
 
     constructor(
@@ -421,8 +431,13 @@ class MatrixRaindrop {
             minFrameDelay: this.matrixAnimation.options.minFrameDelay,
             maxFrameDelay: this.matrixAnimation.options.maxFrameDelay,
             randomizeFrameDelay: this.matrixAnimation.options.randomizeFrameDelay,
+            moveSpeed: this.matrixAnimation.options.moveSpeed,
             minMoveSpeed: this.matrixAnimation.options.minMoveSpeed,
             maxMoveSpeed: this.matrixAnimation.options.maxMoveSpeed,
+            minFontSize: this.matrixAnimation.options.minFontSize,
+            maxFontSize: this.matrixAnimation.options.maxFontSize,
+            randomizeScale: this.matrixAnimation.options.randomizeScale,
+            correlateScaleSpeed: this.matrixAnimation.options.correlateScaleSpeed,
             alignToColumns: this.matrixAnimation.options.alignToColumns,
             jitterLeftStrength: this.matrixAnimation.options.jitterLeftStrength,
             jitterRightStrength: this.matrixAnimation.options.jitterRightStrength,
@@ -442,6 +457,12 @@ class MatrixRaindrop {
                 : 1;
         this.font =
             `${this.config.fontSize ?? 14}px ${this.config.fontFamily ?? 'Arial'}`;
+
+        if (this.config.minMoveSpeed != null && this.config.maxMoveSpeed != null) {
+            this.moveSpeed = randomFloat(this.config.minMoveSpeed, this.config.maxMoveSpeed);
+        } else if (this.config.moveSpeed != null) {
+            this.moveSpeed = this.config.moveSpeed;
+        }
     }
 
     initMoveDirection() {
@@ -463,9 +484,7 @@ class MatrixRaindrop {
         switch (this.config.direction) {
             case 'LR': {
                 this.shiftDirection = () => {
-                    this.x += (this.config.minMoveSpeed && this.config.maxMoveSpeed)
-                        ? randomFloat(this.config.minMoveSpeed, this.config.maxMoveSpeed)
-                        : (this.matrixAnimation.options.rainWidth ?? 0);
+                    this.x += this.getMoveStep(this.matrixAnimation.options.rainWidth ?? 0);
 
                     if (this.x > this.matrixAnimation.canvasWidth) {
                         this.randomizeChars();
@@ -478,9 +497,7 @@ class MatrixRaindrop {
             }
             case 'BU': {
                 this.shiftDirection = () => {
-                    this.y -= (this.config.minMoveSpeed && this.config.maxMoveSpeed)
-                        ? randomFloat(this.config.minMoveSpeed, this.config.maxMoveSpeed)
-                        : (this.matrixAnimation.options.rainHeight ?? 0);
+                    this.y -= this.getMoveStep(this.matrixAnimation.options.rainHeight ?? 0);
 
                     if (this.y < 0) {
                         this.randomizeChars();
@@ -493,9 +510,7 @@ class MatrixRaindrop {
             }
             case 'RL': {
                 this.shiftDirection = () => {
-                    this.x -= (this.config.minMoveSpeed && this.config.maxMoveSpeed)
-                        ? randomFloat(this.config.minMoveSpeed, this.config.maxMoveSpeed)
-                        : (this.matrixAnimation.options.rainWidth ?? 0);
+                    this.x -= this.getMoveStep(this.matrixAnimation.options.rainWidth ?? 0);
 
                     if (this.x < 0) {
                         this.randomizeChars();
@@ -509,9 +524,7 @@ class MatrixRaindrop {
             case 'TD':
             default: {
                 this.shiftDirection = () => {
-                    this.y += (this.config.minMoveSpeed && this.config.maxMoveSpeed)
-                        ? randomFloat(this.config.minMoveSpeed, this.config.maxMoveSpeed)
-                        : (this.matrixAnimation.options.rainHeight ?? 0);
+                    this.y += this.getMoveStep(this.matrixAnimation.options.rainHeight ?? 0);
 
                     if (this.y > this.matrixAnimation.canvasHeight) {
                         this.randomizeChars();
@@ -523,6 +536,16 @@ class MatrixRaindrop {
                 break;
             }
         }
+    }
+
+    private getMoveStep(fallback: number): number {
+        if (this.config.minMoveSpeed != null && this.config.maxMoveSpeed != null) {
+            return this.moveSpeed;
+        }
+        if (this.config.moveSpeed != null) {
+            return this.moveSpeed;
+        }
+        return fallback;
     }
 
     randomizeChars() {
@@ -539,6 +562,29 @@ class MatrixRaindrop {
                 this.config.minFrameDelay ?? 30, 
                 this.config.maxFrameDelay ?? 60
             );
+        }
+
+        if (this.config.randomizeScale && this.config.minFontSize != null && this.config.maxFontSize != null) {
+            this.config.fontSize = randomInt(this.config.minFontSize, this.config.maxFontSize);
+            this.font = `${this.config.fontSize}px ${this.config.fontFamily ?? 'Arial'}`;
+        }
+
+        if (this.config.minMoveSpeed != null && this.config.maxMoveSpeed != null) {
+            if (this.config.correlateScaleSpeed && this.config.randomizeScale
+                && this.config.minFontSize != null && this.config.maxFontSize != null
+                && this.config.fontSize != null
+            ) {
+                const sizeRange = this.config.maxFontSize - this.config.minFontSize;
+                const t = sizeRange > 0
+                    ? (this.config.fontSize - this.config.minFontSize) / sizeRange
+                    : 0.5;
+                const speedRange = this.config.maxMoveSpeed - this.config.minMoveSpeed;
+                this.moveSpeed = this.config.correlateScaleSpeed === 'inverse'
+                    ? this.config.maxMoveSpeed - t * speedRange
+                    : this.config.minMoveSpeed + t * speedRange;
+            } else {
+                this.moveSpeed = randomFloat(this.config.minMoveSpeed, this.config.maxMoveSpeed);
+            }
         }
 
         // Randomize the position when the drop respawns
