@@ -176,6 +176,13 @@
             raindrop.addBinding(animation.options.rainDrop, 'headColor', { input: 'color:rgba' });
             raindrop.addBinding(animation.options.rainDrop, 'trailColor', { input: 'color:rgba' });
             raindrop.addBinding(animation.options.rainDrop, 'fontSize', { min: 1, max: 100, step: 1 });
+            raindrop.addBinding(animation.options.rainDrop, 'randomizeScale');
+            raindrop.addBinding(animation.options.rainDrop, 'minFontSize', { min: 1, max: 100, step: 1 });
+            raindrop.addBinding(animation.options.rainDrop, 'maxFontSize', { min: 1, max: 100, step: 1 });
+            raindrop.addBinding(animation.options.rainDrop, 'moveSpeed', { min: 0, max: 100, step: 1 });
+            raindrop.addBinding(animation.options.rainDrop, 'minMoveSpeed', { min: 0, max: 100, step: 1 });
+            raindrop.addBinding(animation.options.rainDrop, 'maxMoveSpeed', { min: 0, max: 100, step: 1 });
+            raindrop.addBinding(animation.options.rainDrop, 'correlateScaleSpeed', { options: { "Off": false, "Proportional": true, "Inverse": "inverse" } });
             raindrop.addBinding(animation.options.rainDrop, 'jitterLeftStrength', { min: 0, max: 10, step: 1 });
             raindrop.addBinding(animation.options.rainDrop, 'jitterRightStrength', { min: 0, max: 10, step: 1 });
             raindrop.addBinding(animation.options.rainDrop, 'jitterUpStrength', { min: 0, max: 10, step: 1 });

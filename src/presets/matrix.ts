@@ -21,6 +21,7 @@ export default Object.seal({
         randomizeScale: true,
         minFontSize: 12,
         maxFontSize: 22,
+        moveSpeed: 0,
         minMoveSpeed: 8,
         maxMoveSpeed: 42,
         correlateScaleSpeed: true,
