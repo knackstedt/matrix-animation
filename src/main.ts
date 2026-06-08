@@ -39,6 +39,8 @@ export class MatrixAnimation {
     private hasCreatedCanvas = false;
     rainWidth = 0;
 
+    public options: MatrixOptions = {};
+
     /**
      * 
      * @param selector CSS Selector or HTML element that we bootstrap the canvas onto
@@ -46,8 +48,9 @@ export class MatrixAnimation {
      */
     constructor(
         private selector: string | HTMLElement,
-        public options: MatrixOptions = {}
+        options: MatrixOptions = {}
     ) {
+        this.options = structuredClone(options);
         this.applyOptions(options);
 
         this.setupElements();
@@ -124,6 +127,7 @@ export class MatrixAnimation {
     applyOptions(options: MatrixOptions = this.options) {
         if (typeof this.options !== 'object')
             throw new Error('Options must be an object');
+        options = structuredClone(options);
 
         this.options.minFrameTime = options.minFrameTime ?? 50;
         this.options.rainGenerator = options.rainGenerator ?? {};
@@ -253,7 +257,7 @@ export class MatrixAnimation {
         canvas.style.position = 'absolute';
     }
 
-    private initCanvasShift() {
+    public initCanvasShift() {
         switch (this.options.windDirection) {
             case "LR": {
                 this.performCanvasShift = () => {

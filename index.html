@@ -64,21 +64,22 @@
     <script type="module" type="text/javascript">
         import { Pane } from 'https://cdn.jsdelivr.net/npm/tweakpane@4.0.3/dist/tweakpane.min.js';
         import { MatrixAnimation } from './src/main.ts';
-        import MatrixPreset from './src/presets/matrix.ts';
-        import DigitalRainPreset from './src/presets/digital-rain.ts';
-        import RainPreset from './src/presets/rain.ts';
-        import MeteorRainPreset from './src/presets/meteor-rain.ts';
+        import { MATRIX_PRESETS } from './src/samples.ts';
     
-        let currentConfig = structuredClone(MatrixPreset);
+        let currentConfig = structuredClone(MATRIX_PRESETS['matrix']);
         const animation = new MatrixAnimation(".container", currentConfig);
 
         const presetMap = {
-            "default": MatrixPreset,
-            "digitalRain": DigitalRainPreset,
-            "rain": RainPreset,
-            "meteor": MeteorRainPreset
+            "cyberpunk": MATRIX_PRESETS["cyberpunk"],
+            "ocean-blue": MATRIX_PRESETS["ocean-blue"],
+            "fire-red": MATRIX_PRESETS["fire-red"],
+            "monochrome": MATRIX_PRESETS["monochrome"],
+            "purple-haze": MATRIX_PRESETS["purple-haze"],
+            "neon-pink": MATRIX_PRESETS["neon-pink"],
+            "matrix": MATRIX_PRESETS["matrix"],
+            "digital-rain": MATRIX_PRESETS["digital-rain"],
         }
-        let currentPreset = 'default';
+        let currentPreset = 'matrix';
 
         let pane;
         const initPane = () => {
@@ -86,6 +87,7 @@
             const element = document.querySelector(".tweakpane");
             const btn = document.querySelector(".show-button");
 
+            element.style.transform = '';
             element.style.right = "10px";
             btn.style.opacity = 1;
             btn.style.right = "-100vw";
@@ -100,12 +102,63 @@
                 expanded: true,
             });
 
+            // Ensure defaults for tweakpane bindings
+            animation.options.autoStart = animation.options.autoStart ?? true;
+            animation.options.rainHeight = animation.options.rainHeight ?? 0;
+            animation.options.syncFrame = animation.options.syncFrame ?? true;
+            animation.options.trailColorLogic = animation.options.trailColorLogic ?? 'random';
+            animation.options.windSpeed = animation.options.windSpeed ?? 0;
+            animation.options.windDirection = animation.options.windDirection ?? 'TD';
+            animation.options.warmupIterations = animation.options.warmupIterations ?? 0;
+            animation.options.headBloomSize = animation.options.headBloomSize ?? 0;
+            animation.options.headBloomColor = animation.options.headBloomColor ?? '#ffffff';
+            animation.options.trailBloomSize = animation.options.trailBloomSize ?? 0;
+            animation.options.trailBloomColor = animation.options.trailBloomColor ?? '#ffffff';
+            animation.options.rainGenerator = animation.options.rainGenerator ?? {};
+            animation.options.rainGenerator.count = animation.options.rainGenerator.count ?? 0;
+            animation.options.rainGenerator.density = animation.options.rainGenerator.density ?? 2;
+            animation.options.rainGenerator.direction = animation.options.rainGenerator.direction ?? 'TD';
+            animation.options.rainGenerator.randomizeXonLeaveView = animation.options.rainGenerator.randomizeXonLeaveView ?? false;
+            animation.options.rainGenerator.randomizeYonLeaveView = animation.options.rainGenerator.randomizeYonLeaveView ?? false;
+            if (!Array.isArray(animation.options.rainDrop) && typeof animation.options.rainDrop === 'object') {
+                animation.options.rainDrop.direction = animation.options.rainDrop.direction ?? 'TD';
+                animation.options.rainDrop.headColor = animation.options.rainDrop.headColor ?? 'rgba(255,255,255,0.8)';
+                animation.options.rainDrop.trailColor = animation.options.rainDrop.trailColor ?? 'rgba(140,62,225,1)';
+                animation.options.rainDrop.fontSize = animation.options.rainDrop.fontSize ?? 14;
+                animation.options.rainDrop.randomizeScale = animation.options.rainDrop.randomizeScale ?? false;
+                animation.options.rainDrop.minFontSize = animation.options.rainDrop.minFontSize ?? 12;
+                animation.options.rainDrop.maxFontSize = animation.options.rainDrop.maxFontSize ?? 22;
+                animation.options.rainDrop.moveSpeed = animation.options.rainDrop.moveSpeed ?? 0;
+                animation.options.rainDrop.minMoveSpeed = animation.options.rainDrop.minMoveSpeed ?? 4;
+                animation.options.rainDrop.maxMoveSpeed = animation.options.rainDrop.maxMoveSpeed ?? 12;
+                animation.options.rainDrop.correlateScaleSpeed = animation.options.rainDrop.correlateScaleSpeed ?? false;
+                animation.options.rainDrop.jitterLeftStrength = animation.options.rainDrop.jitterLeftStrength ?? 0;
+                animation.options.rainDrop.jitterRightStrength = animation.options.rainDrop.jitterRightStrength ?? 0;
+                animation.options.rainDrop.jitterUpStrength = animation.options.rainDrop.jitterUpStrength ?? 0;
+                animation.options.rainDrop.jitterDownStrength = animation.options.rainDrop.jitterDownStrength ?? 0;
+                animation.options.rainDrop.alignToColumns = animation.options.rainDrop.alignToColumns ?? true;
+                animation.options.rainDrop.frameDelay = animation.options.rainDrop.frameDelay ?? 50;
+                animation.options.rainDrop.minFrameDelay = animation.options.rainDrop.minFrameDelay ?? 30;
+                animation.options.rainDrop.maxFrameDelay = animation.options.rainDrop.maxFrameDelay ?? 60;
+                animation.options.rainDrop.randomizeFrameDelay = animation.options.rainDrop.randomizeFrameDelay ?? false;
+                animation.options.rainDrop.randomizePosition = animation.options.rainDrop.randomizePosition ?? false;
+                animation.options.rainDrop.fontFamily = animation.options.rainDrop.fontFamily ?? 'monospace';
+                animation.options.rainDrop.trailColors = animation.options.rainDrop.trailColors ?? [];
+                if (animation.options.rainDrop.trailColors.length > 0 && !animation.options.rainDrop.trailColor) {
+                    animation.options.rainDrop.trailColor = animation.options.rainDrop.trailColors[0];
+                }
+            }
+
             base.addBinding({ preset: currentPreset }, 'preset', {
                 options: {
-                    "Matrix": 'default',
-                    "Digital Rain": 'digitalRain',
-                    "Rain": 'rain',
-                    "Meteor Rain": 'meteor',
+                    "Cyberpunk": 'cyberpunk',
+                    "Ocean Blue": 'ocean-blue',
+                    "Fire Red": 'fire-red',
+                    "Monochrome": 'monochrome',
+                    "Purple Haze": 'purple-haze',
+                    "Neon Pink": 'neon-pink',
+                    "Matrix": 'matrix',
+                    "Digital Rain": 'digital-rain',
                 },
             }).on('change', ({ value }) => {
                 const options = presetMap[currentPreset = value];
@@ -154,15 +207,33 @@
             base.addBinding(animation.options, 'trailBloomSize', { min: 0, max: 30, step: 1 });
             base.addBinding(animation.options, 'trailBloomColor', { input: 'color:rgba' });
             base.addBinding(animation.options, 'rainWidth', { min: 0, max: 100, step: 1 });
-            // base.addBinding(animation.options, 'rainHeight', { min: 0, max: 100 });
+            base.addBinding(animation.options, 'rainHeight', { min: 0, max: 100, step: 1 });
             base.addBinding(animation.options, 'minFrameTime', { min: 5, max: 1000, step: 1 });
-            // base.addBinding(animation.options, 'windSpeed', { min: 0, max: 20, step: 1 });
-            // base.addBinding(animation.options, 'windDirection', { options: [{text: "Top=>Down", value: 'TD'}, { text: "Bottom=>Up", value: 'BU' }, { text: "Left=>Right", value: "LR"}, { text: "Right=>Left", value: "RL" }] }).on("change", ()=>{
-            //     animation.initCanvasShift();
-            // });
-            // base.addBinding(animation.options, 'warmupIterations', { min: 0, max: 500, step: 1 });
             base.addBinding(animation.options, 'fadeStrength', { min: 0, max: 1 });
+            base.addBinding(animation.options, 'syncFrame');
+            base.addBinding(animation.options, 'trailColorLogic', { options: { "Random": 'random', "Sequential": 'sequential' } });
+            base.addBinding(animation.options, 'windSpeed', { min: 0, max: 20, step: 1 });
+            base.addBinding(animation.options, 'windDirection', { options: [{text: "Top=>Down", value: 'TD'}, { text: "Bottom=>Up", value: 'BU' }, { text: "Left=>Right", value: "LR"}, { text: "Right=>Left", value: "RL" }] }).on("change", ()=>{
+                animation.initCanvasShift();
+            });
+            base.addBinding(animation.options, 'warmupIterations', { min: 0, max: 500, step: 1 });
+            base.addBinding(animation.options, 'autoStart');
 
+
+            const rainGen = pane.addFolder({
+                title: 'Rain Generator',
+                expanded: false,
+            });
+            rainGen.addBinding(animation.options.rainGenerator, 'density', { min: 0, max: 5, step: 0.1 });
+            rainGen.addBinding(animation.options.rainGenerator, 'count', { min: 0, max: 1000, step: 1 });
+            rainGen.addBinding(animation.options.rainGenerator, 'direction', { options: [{ text: "Top=>Down", value: 'TD' }, { text: "Bottom=>Up", value: 'BU' }, { text: "Left=>Right", value: "LR" }, { text: "Right=>Left", value: "RL" }] });
+            rainGen.addBinding(animation.options.rainGenerator, 'randomizeXonLeaveView');
+            rainGen.addBinding(animation.options.rainGenerator, 'randomizeYonLeaveView');
+            rainGen.on('change', (evt) => {
+                if (['density', 'count', 'direction'].includes(evt.target.key)) {
+                    animation.resetRaindrops();
+                }
+            });
 
             const raindrop = pane.addFolder({
                 title: 'Raindrop Options',
@@ -175,6 +246,19 @@
             });
             raindrop.addBinding(animation.options.rainDrop, 'headColor', { input: 'color:rgba' });
             raindrop.addBinding(animation.options.rainDrop, 'trailColor', { input: 'color:rgba' });
+            const trailColorsProxy = {
+                get colors() {
+                    return (animation.options.rainDrop.trailColors ?? []).join(', ');
+                },
+                set colors(v) {
+                    animation.options.rainDrop.trailColors = v.split(',').map(s => s.trim()).filter(Boolean);
+                }
+            };
+            raindrop.addBinding(trailColorsProxy, 'colors', { label: 'trailColors' }).on('change', () => {
+                animation.raindrops.forEach(drop => {
+                    drop.config.trailColors = animation.options.rainDrop.trailColors;
+                });
+            });
             raindrop.addBinding(animation.options.rainDrop, 'fontSize', { min: 1, max: 100, step: 1 });
             raindrop.addBinding(animation.options.rainDrop, 'randomizeScale');
             raindrop.addBinding(animation.options.rainDrop, 'minFontSize', { min: 1, max: 100, step: 1 });
@@ -188,6 +272,12 @@
             raindrop.addBinding(animation.options.rainDrop, 'jitterUpStrength', { min: 0, max: 10, step: 1 });
             raindrop.addBinding(animation.options.rainDrop, 'jitterDownStrength', { min: 0, max: 10, step: 1 });
             raindrop.addBinding(animation.options.rainDrop, 'fontFamily');
+            raindrop.addBinding(animation.options.rainDrop, 'alignToColumns');
+            raindrop.addBinding(animation.options.rainDrop, 'frameDelay', { min: 1, max: 500, step: 1 });
+            raindrop.addBinding(animation.options.rainDrop, 'minFrameDelay', { min: 1, max: 500, step: 1 });
+            raindrop.addBinding(animation.options.rainDrop, 'maxFrameDelay', { min: 1, max: 500, step: 1 });
+            raindrop.addBinding(animation.options.rainDrop, 'randomizeFrameDelay');
+            raindrop.addBinding(animation.options.rainDrop, 'randomizePosition');
 
             raindrop.on('change', (evt) => {
                 const hardReload = 
@@ -228,8 +318,7 @@
                 btn.style.right = "0";
 
                 btn.onclick = () => {
-                    btn.dispose();
-                    element.style.transform = '';
+                    initPane();
                 }
 
                 setTimeout(() => {
